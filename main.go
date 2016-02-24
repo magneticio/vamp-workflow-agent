@@ -6,13 +6,15 @@ import (
     "flag"
     "time"
     "strings"
+    "io/ioutil"
 
     "github.com/op/go-logging"
 
     "golang.org/x/net/context"
     "github.com/coreos/etcd/client"
     "github.com/hashicorp/consul/api"
-    "github.com/samuel/go-zookeeper/zk")
+    "github.com/samuel/go-zookeeper/zk"
+)
 
 var (
     storeType = flag.String("storeType", "", "zookeeper, consul or etcd.")
@@ -86,17 +88,24 @@ func main() {
     logger.Info("Key-value store root key path : %s", *rootPath)
     logger.Info("Workflow file path            : %s", *workflowPath)
 
-    workflow := *rootPath + "/workflow"
-    logger.Info("Reading workflow from         : %s", workflow)
+    workflowKey := *rootPath + "/workflow"
+    logger.Info("Reading workflow from         : %s", workflowKey)
 
-    response, err := readFromKeyValueStore(workflow)
+    content, err := readFromKeyValueStore(workflowKey)
 
     if err != nil {
         logger.Panic("Can't read the workflow: ", err)
         return
     }
 
-    logger.Info("Value: %s", response)
+    workflowFile := *workflowPath + "/workflow.js"
+    logger.Info("Writing workflow to the file  : %s", workflowFile)
+    err = ioutil.WriteFile(workflowFile, content, 0644)
+
+    if err != nil {
+        logger.Panic("Can't write to the workflow file: ", err)
+        return
+    }
 }
 
 func readFromKeyValueStore(path string) ([]byte, error) {
