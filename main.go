@@ -6,6 +6,7 @@ import (
     "flag"
     "time"
     "strings"
+    "os/exec"
     "io/ioutil"
 
     "github.com/op/go-logging"
@@ -14,6 +15,7 @@ import (
     "github.com/coreos/etcd/client"
     "github.com/hashicorp/consul/api"
     "github.com/samuel/go-zookeeper/zk"
+    "bytes"
 )
 
 var (
@@ -21,7 +23,7 @@ var (
     storeConnection = flag.String("storeConnection", "", "Key-value store connection string.")
     rootPath = flag.String("rootPath", "", "Scheduled workflow key-value store root path.")
 
-    workflowPath = flag.String("workflowPath", "/opt/vamp/workflow", "Path to workflow files.")
+    workflowPath = flag.String("workflowPath", "/opt/vamp", "Path to workflow files.")
 
     logo = flag.Bool("logo", true, "Show logo.")
     help = flag.Bool("help", false, "Print usage.")
@@ -99,12 +101,27 @@ func main() {
     }
 
     workflowFile := *workflowPath + "/workflow.js"
-    logger.Info("Writing workflow to the file  : %s", workflowFile)
+    logger.Info("Writing workflow script       : %s", workflowFile)
     err = ioutil.WriteFile(workflowFile, content, 0644)
 
     if err != nil {
-        logger.Panic("Can't write to the workflow file: ", err)
+        logger.Panic("Can't write to the workflow script: ", err)
         return
+    }
+
+    logger.Info("Running 'workflow.js' by Node.js.")
+    var cmd *exec.Cmd
+    cmd = exec.Command("node", workflowFile)
+
+    var stdout, stderr bytes.Buffer
+    cmd.Stdout = &stdout
+    cmd.Stderr = &stderr
+
+    err = cmd.Run()
+    if err != nil {
+        logger.Error("Error while running the workflow script.", err.Error(), string(stderr.Bytes()[:]))
+    } else {
+        logger.Notice("Execution result: %s", string(stdout.Bytes()[:]))
     }
 }
 
