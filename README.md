@@ -10,6 +10,8 @@ Vamp Workflow Agent reads workflow Javascript file from key-value store [ZooKeep
 $ ./vamp-workflow-agent -help
                                        
 Usage of ./vamp-workflow-agent:
+  -elasticsearchConnection string
+        Elasticsearch connection string.
   -help
         Print usage.
   -logo
@@ -61,7 +63,15 @@ Vamp Workflow Agent:
 - sets environment variables
 - executes `node $workflowPath/workflow.js`
 
-By default in Docker image the following npm modules are installed (in `$workflowPath`) and available to workflow script:
+Set environment variables:
+
+- `VAMP_KEY_VALUE_STORE_TYPE=$storeType`
+- `VAMP_KEY_VALUE_STORE_CONNECTION=$storeConnection`
+- `VAMP_KEY_VALUE_STORE_ROOT_PATH=$rootPath`
+- `VAMP_WORKFLOW_DIRECTORY=$workflowPath`
+- `VAMP_ELASTICSEARCH_CONNECTION=$elasticsearchConnection`
+
+By default in Docker image the following npm packages are installed (in `$workflowPath`) and available to workflow script:
 
 - [underscore](https://github.com/jashkenas/underscore)
 - [lodash](https://github.com/elastic/elasticsearch-js)
@@ -70,4 +80,4 @@ By default in Docker image the following npm modules are installed (in `$workflo
 - [consul](https://github.com/silas/node-consul)
 - [node-etcd](https://github.com/stianeikeland/node-etcd)
 
-More details [package.json](https://github.com/magneticio/vamp-workflow-agent/blob/master/package.json)
+More details: [package.json](https://github.com/magneticio/vamp-workflow-agent/blob/master/package.json)

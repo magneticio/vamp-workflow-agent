@@ -16,6 +16,8 @@ var (
 
     workflowPath = flag.String("workflowPath", "/opt/vamp", "Path to workflow files.")
 
+    elasticsearchConnection = flag.String("elasticsearchConnection", "", "Elasticsearch connection string.")
+
     logo = flag.Bool("logo", true, "Show logo.")
     help = flag.Bool("help", false, "Print usage.")
 
@@ -70,6 +72,7 @@ func main() {
     logger.Info("Key-value store connection    : %s", *storeConnection)
     logger.Info("Key-value store root key path : %s", *rootPath)
     logger.Info("Workflow file path            : %s", *workflowPath)
+    logger.Info("Elasticsearch connection      : %s", *elasticsearchConnection)
 
     workflowKey := *rootPath + "/workflow"
     logger.Info("Reading workflow from         : %s", workflowKey)
@@ -82,13 +85,52 @@ func main() {
     }
 
     workflowFile := *workflowPath + "/workflow.js"
-    logger.Info("Writing workflow script       : %s", workflowFile)
-    err = ioutil.WriteFile(workflowFile, content, 0644)
+
+    err = writeWorkflowScript(workflowFile, content)
 
     if err != nil {
         logger.Panic("Can't write to the workflow script: ", err)
         return
     }
+
+    err = setEnvironmentVariables()
+
+    if err != nil {
+        logger.Panic("Can't set eEnvironment variables: ", err)
+        return
+    }
+
+    exitStatusCode := executeWorkflowScript(workflowFile)
+
+    os.Exit(exitStatusCode)
+}
+
+func writeWorkflowScript(workflowFile string, content []byte) error {
+    logger.Info("Writing workflow script       : %s", workflowFile)
+    return ioutil.WriteFile(workflowFile, content, 0644)
+}
+
+func setEnvironmentVariables() error {
+
+    environmentVariables := make(map[string]string)
+
+    environmentVariables["VAMP_KEY_VALUE_STORE_TYPE"] = *storeType
+    environmentVariables["VAMP_KEY_VALUE_STORE_CONNECTION"] = *storeConnection
+    environmentVariables["VAMP_KEY_VALUE_STORE_ROOT_PATH"] = *rootPath
+    environmentVariables["VAMP_WORKFLOW_DIRECTORY"] = *workflowPath
+    environmentVariables["VAMP_ELASTICSEARCH_CONNECTION"] = *elasticsearchConnection
+
+    for key, value := range environmentVariables {
+        err := os.Setenv(key, value)
+        if err != nil {
+            return err
+        }
+    }
+
+    return nil
+}
+
+func executeWorkflowScript(workflowFile string) int {
 
     logger.Info("Executing 'workflow.js' by Node.js.")
     var cmd *exec.Cmd
@@ -98,9 +140,11 @@ func main() {
     cmd.Stdout = &stdout
     cmd.Stderr = &stderr
 
-    err = cmd.Run()
+    err := cmd.Run()
 
     exitStatusCode := 0
+
+    logger.Info("Execution standard output: %s", string(stdout.Bytes()[:]))
 
     if err != nil {
         logger.Error("Error during execution: %s, %s", err.Error(), string(stderr.Bytes()[:]))
@@ -109,12 +153,9 @@ func main() {
                 exitStatusCode = status.ExitStatus()
             }
         }
-
-    } else {
-        logger.Info("Execution standard output: %s", string(stdout.Bytes()[:]))
     }
 
     logger.Notice("Exit status code: %d", exitStatusCode)
 
-    os.Exit(exitStatusCode)
+    return exitStatusCode
 }
