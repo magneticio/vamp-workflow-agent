@@ -75,6 +75,7 @@ By default in Docker image the following npm packages are installed (in `$workfl
 
 - [underscore](https://github.com/jashkenas/underscore)
 - [lodash](https://github.com/elastic/elasticsearch-js)
+- [highland](https://github.com/caolan/highland)
 - [elasticsearch](https://github.com/elastic/elasticsearch-js)
 - [node-zookeeper-client](https://github.com/alexguan/node-zookeeper-client)
 - [consul](https://github.com/silas/node-consul)
