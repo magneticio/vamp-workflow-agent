@@ -51,20 +51,9 @@ func main() {
         return
     }
 
-    if len(*storeType) == 0 {
-        logger.Panic("Key-value store type not speciffed.")
-        return
-    }
-
-    if len(*rootPath) == 0 {
-        logger.Panic("Key-value store root key path not speciffed.")
-        return
-    }
-
-    if len(*storeConnection) == 0 {
-        logger.Panic("Key-value store connection not speciffed.")
-        return
-    }
+    check(storeType, "VAMP_KEY_VALUE_STORE_TYPE", "Key-value store type not specified.")
+    check(rootPath, "VAMP_KEY_VALUE_STORE_ROOT_PATH", "Key-value store root key path not specified.")
+    check(storeConnection, "VAMP_KEY_VALUE_STORE_CONNECTION", "Key-value store connection not specified.")
 
     logger.Notice("Starting Vamp Workflow Agent")
 
@@ -103,6 +92,15 @@ func main() {
     exitStatusCode := executeWorkflowScript(workflowFile)
 
     os.Exit(exitStatusCode)
+}
+
+func check(argument *string, environmentVariable, panic string) {
+    if len(*argument) == 0 {
+        *argument = os.Getenv(environmentVariable)
+        if len(*argument) == 0 {
+            logger.Panic(panic)
+        }
+    }
 }
 
 func writeWorkflowScript(workflowFile string, content []byte) error {
