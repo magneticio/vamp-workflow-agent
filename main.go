@@ -6,6 +6,7 @@ import (
     "os/exec"
     "io/ioutil"
     "syscall"
+    "os"
 )
 
 var (
@@ -99,13 +100,13 @@ func main() {
 
     err = cmd.Run()
 
-    exitStatus := 0
+    exitStatusCode := 0
 
     if err != nil {
         logger.Error("Error during execution: %s, %s", err.Error(), string(stderr.Bytes()[:]))
         if exitError, ok := err.(*exec.ExitError); ok {
             if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
-                exitStatus = status.ExitStatus()
+                exitStatusCode = status.ExitStatus()
             }
         }
 
@@ -113,5 +114,7 @@ func main() {
         logger.Info("Execution standard output: %s", string(stdout.Bytes()[:]))
     }
 
-    logger.Notice("Exit status: %d", exitStatus)
+    logger.Notice("Exit status code: %d", exitStatusCode)
+
+    os.Exit(exitStatusCode)
 }
