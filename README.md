@@ -51,3 +51,23 @@ Usage of ./build.sh:
   -b|--build  Build Docker image.
 
 ```
+
+## Executing Workflow
+
+Vamp Workflow Agent:
+
+- retrieves workflow script file from: `$rootPath/workflow`
+- saves it as `workflow.js` in directory `$workflowPath`
+- sets environment variables
+- executes `node $workflowPath/workflow.js`
+
+By default in Docker image the following npm modules are installed (in `$workflowPath`) and available to workflow script:
+
+- [underscore](https://github.com/jashkenas/underscore)
+- [lodash](https://github.com/elastic/elasticsearch-js)
+- [elasticsearch](https://github.com/elastic/elasticsearch-js)
+- [node-zookeeper-client](https://github.com/alexguan/node-zookeeper-client)
+- [consul](https://github.com/silas/node-consul)
+- [node-etcd](https://github.com/stianeikeland/node-etcd)
+
+More details [package.json](https://github.com/magneticio/vamp-workflow-agent/blob/master/package.json)

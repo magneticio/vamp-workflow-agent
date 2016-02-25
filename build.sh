@@ -10,7 +10,7 @@ version="0.9.0"
 target='target'
 target_vamp=${target}'/vamp'
 target_docker=${target}'/docker'
-assembly_go='vamp-workflow-agent.tar.gz'
+assembly_go='vamp.tar.gz'
 docker_image_name="magneticio/vamp-workflow-agent:${version}"
 
 cd ${dir}
@@ -72,13 +72,15 @@ function go_build() {
     mv ${bin} ${target_vamp} && chmod +x ${target_vamp}/${bin}
 }
 
-function docker_rmi {
-    echo "${green}removing docker image: $1 ${reset}"
-    docker rmi -f $1 2> /dev/null
+function npm_make {
+    cp ${dir}/package.json ${target_vamp}
+    cd ${target_vamp}
+    npm install
 }
 
 function docker_make {
-    append_to=$1/Dockerfile
+
+    append_to=${dir}/${target_docker}/Dockerfile
     cp ${dir}/Dockerfile ${append_to}
 
     echo "${green}appending common code to: ${append_to} ${reset}"
@@ -90,9 +92,19 @@ function docker_make {
     append "ENTRYPOINT [\"/opt/vamp/vamp-workflow-agent\"]"
 }
 
+function vamp_archive {
+    cd ${dir}/${target} && tar -zcf ${assembly_go} vamp
+    mv ${dir}/${target}/${assembly_go} ${dir}/${target_docker} 2> /dev/null
+}
+
 function docker_build {
     echo "${green}building docker image: $1 ${reset}"
     docker build -t $1 $2
+}
+
+function docker_rmi {
+    echo "${green}removing docker image: $1 ${reset}"
+    docker rmi -f $1 2> /dev/null
 }
 
 function docker_image {
@@ -104,10 +116,10 @@ function process() {
     rm -Rf ${dir}/${target} 2> /dev/null && mkdir -p ${dir}/${target_docker}
 
     if [ ${flag_make} -eq 1 ]; then
-        docker_make ${dir}/${target_docker}
+        docker_make
         go_build
-        cd ${dir}/${target} && tar -zcf ${assembly_go} vamp
-        mv ${dir}/${target}/${assembly_go} ${dir}/${target_docker} 2> /dev/null
+        npm_make
+        vamp_archive
     fi
 
     if [ ${flag_clean} -eq 1 ]; then
