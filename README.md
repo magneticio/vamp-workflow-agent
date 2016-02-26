@@ -41,6 +41,8 @@ Alternatively using the `build.sh` script:
   ./build.sh --make
 ```
 Deliverable is in `target/go` directory.
+
+Released binaries can be [downloaded](https://bintray.com/magnetic-io/downloads/vamp-gateway-agent).
  
 ## Building Docker Images
 
