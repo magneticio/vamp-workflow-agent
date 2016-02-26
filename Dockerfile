@@ -1,5 +1,7 @@
 FROM alpine:3.3
 
+ENV VAMP_GATEWAY_VERSION=0.9.0
+
 # Node.js installation is based on: https://github.com/mhart/alpine-node
 
 ENV NODE_VERSION=v5.7.0 NPM_VERSION=3
@@ -23,6 +25,6 @@ RUN set -ex && \
       /usr/share/man /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp \
       /usr/lib/node_modules/npm/man /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html
 
-ADD vamp.tar.gz /opt
+ADD https://bintray.com/artifact/download/magnetic-io/downloads/vamp-workflow-agent/vamp-workflow-agent_${VAMP_GATEWAY_VERSION}_linux_amd64.tar.gz /opt
 
 ENTRYPOINT ["/opt/vamp/vamp-workflow-agent"]
