@@ -27,7 +27,7 @@ Usage of ./vamp-workflow-agent:
 ```
 
 Some arguments are mandatory and if they are not provided, agent will try to get them from environment variables. 
-For environment variable names check out [Executing Workflow](/magneticio/vamp-workflow-agent#executing-workflow).
+For environment variable names check out Executing Workflow](https://github.com/magneticio/vamp-workflow-agent#executing-workflow).
 
 ## Building Binary
 
