@@ -42,7 +42,7 @@ Alternatively using the `build.sh` script:
 ```
 Deliverable is in `target/go` directory.
 
-Released binaries can be [downloaded](https://bintray.com/magnetic-io/downloads/vamp-gateway-agent).
+Released binaries can be [downloaded](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent).
  
 ## Building Docker Images
 
@@ -90,7 +90,7 @@ More details: [package.json](https://github.com/magneticio/vamp-workflow-agent/b
 
 ## Docker Images
 
-Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/)
+Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/).
 
 [![](https://badge.imagelayers.io/magneticio/vamp-workflow-agent:0.9.0.svg)](https://imagelayers.io/?images=magneticio/vamp-workflow-agent:0.9.0)
 
