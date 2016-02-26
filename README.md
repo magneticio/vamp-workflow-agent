@@ -95,7 +95,11 @@ Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/)
 Example:
 
 ```
-docker run magneticio/vamp-workflow-agent:0.9.0 -elasticsearchConnection=localhost:9200 -storeType=zookeeper -storeConnection=localhost:2181 -rootPath=/scripts
+docker run magneticio/vamp-workflow-agent:0.9.0 \
+           -elasticsearchConnection=localhost:9200 \
+           -storeType=zookeeper \
+           -storeConnection=localhost:2181 \
+           -rootPath=/scripts
 ```
 
 In this example JavaScript is read from `/scripts/workflow` key (`$rootPath/workflow`).
