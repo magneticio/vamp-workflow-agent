@@ -2,8 +2,6 @@ language: go
 sudo: false
 go:
 - 1.5.3
-install:
-- sh "$TRAVIS_BUILD_DIR/.travis-ci-bintray-credentials.sh"
 script:
 - bash build.sh --make
 after_success:
