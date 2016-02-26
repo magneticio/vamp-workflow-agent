@@ -5,7 +5,7 @@ go:
 script:
 - bash build.sh --make
 after_success:
-- if [ ${TRAVIS_PULL_REQUEST} == "false" ] && [ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_TAG == "0.9.0" ]; then bash bintray.sh 0.9.0; fi
+- bash bintray.sh 0.9.0
 env:
   global:
   - secure: WmOpH3NMyQXqaFRINtnbdylA5t3UiXIPGp4+okNEPbtENbOR4r/VWz9QqnQv7Bo+n6Y+BCweno6oDpX9rRtSA3653BtY6G8Q33PI+Ja8Zy9Q+jVjSv/LY4ogXwyidk1leWjYrHqDSlxGy2+uLRiwcjF2YMMW5q38wSEKt6U2l/eF05iKfZPnDPkjWwiCyPYU0wvfzBTRmzvMQarzQl40uG3Y5YjE25ONWtFpF8Q65PWbUkKysYO1L3MNiao7AmGV/pRIwGoCD4G4rdZU5nYEuYmYFIbUNmizoE/X2jJQudG7sP36ZB3z8nT3z4ADhOcl0SocXLDDVQYG3154a5iuS6KZ21aDUQ8XC6vzZ9n94I4J6kEDjtpelwcWZM86qGfSsNY6kkxw/2j3ELTLH06FW/c7lpx+WecKSX7rlSAPyjyY+qU51470GTONeJ6aAMOetIZJ/PfQ7f7dvEXJ3BTsJhBCvdNYf2e38KiwwHuw+eqIWE3rCPMnUq6KiU2b22htQJH8PtESFN5rVDcRwjXhXqojawT33fKvPvYUtCSuI/cPabkCz81xPvyq1t5ZziV4fhDm8kCSCPPrqm9GWvk/gMyy/nUGZ4BQOvUNYIBtJ3VxLCuMgM7Hp/rufn+uruExI0yAW2pgXj+2Rfdj1DKr2shwDlBi1R714KW4OKZgulM=

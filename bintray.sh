@@ -13,14 +13,16 @@ VERSION=$1
 : ${VERSION:?"Not set"}
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 DELIVERABLE=vamp-workflow-agent_${VERSION}_linux_amd64.tar.gz
 
-echo "Uploading ${DELIVERABLE} to Bintray"
-
-curl -v -T ${DIR}/target/docker/vamp.tar.gz \
- -u${BINTRAY_USER}:${BINTRAY_API_KEY} \
- -H "X-Bintray-Package:vamp-workflow-agent" \
- -H "X-Bintray-Version:$VERSION" \
- -H "X-Bintray-Publish:1" \
- https://api.bintray.com/content/magnetic-io/downloads/vamp-workflow-agen/${DELIVERABLE}
+if curl --output /dev/null --silent --head --fail "https://bintray.com/artifact/download/magnetic-io/downloads/vamp-workflow-agent/${DELIVERABLE}"; then
+  echo "${DELIVERABLE} already uploaded"
+else
+  echo "Uploading ${DELIVERABLE} to Bintray"
+  curl -v -T ${DIR}/target/docker/vamp.tar.gz \
+   -u${BINTRAY_USER}:${BINTRAY_API_KEY} \
+   -H "X-Bintray-Package:vamp-workflow-agent" \
+   -H "X-Bintray-Version:$VERSION" \
+   -H "X-Bintray-Publish:1" \
+   https://api.bintray.com/content/magnetic-io/downloads/vamp-workflow-agent/${DELIVERABLE}
+fi
