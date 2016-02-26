@@ -1,6 +1,6 @@
 # Vamp Workflow Agent
 
-Vamp Workflow Agent reads workflow Javascript file from key-value store [ZooKeeper](https://zookeeper.apache.org/), [etcd](https://coreos.com/etcd/docs/latest/) or [Consul](https://consul.io/) and launches Node.js runtime to execute the file.
+Vamp Workflow Agent reads workflow JavaScript file from key-value store [ZooKeeper](https://zookeeper.apache.org/), [etcd](https://coreos.com/etcd/docs/latest/) or [Consul](https://consul.io/) and launches Node.js runtime to execute the file.
 
 [![Build Status](https://travis-ci.org/magneticio/vamp-workflow-agent.svg?branch=master)](https://travis-ci.org/magneticio/vamp-workflow-agent)
 
@@ -25,6 +25,9 @@ Usage of ./vamp-workflow-agent:
   -workflowPath string
         Path to workflow files. (default "/opt/vamp/workflow")
 ```
+
+Some arguments are mandatory and if they are not provided, agent will try to get them from environment variables. 
+For environment variable names check out [Executing Workflow](#executing-workflow).
 
 ## Building Binary
 
@@ -82,3 +85,17 @@ By default in Docker image the following npm packages are installed (in `$workfl
 - [node-etcd](https://github.com/stianeikeland/node-etcd)
 
 More details: [package.json](https://github.com/magneticio/vamp-workflow-agent/blob/master/package.json)
+
+## Docker Images
+
+Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/)
+
+[![](https://badge.imagelayers.io/magneticio/vamp-workflow-agent:0.9.0.svg)](https://imagelayers.io/?images=magneticio/vamp-workflow-agent:0.9.0)
+
+Example:
+
+```
+docker run magneticio/vamp-workflow-agent:0.9.0 -elasticsearchConnection=localhost:9200 -storeType=zookeeper -storeConnection=localhost:2181 -rootPath=/scripts
+```
+
+In this example JavaScript is read from `/scripts/workflow` key (`$rootPath/workflow`).

@@ -22,3 +22,7 @@ RUN set -ex && \
     rm -rf /etc/ssl /node-${NODE_VERSION} ${RM_DIRS} \
       /usr/share/man /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp \
       /usr/lib/node_modules/npm/man /usr/lib/node_modules/npm/doc /usr/lib/node_modules/npm/html
+
+ADD vamp.tar.gz /opt
+
+ENTRYPOINT ["/opt/vamp/vamp-workflow-agent"]

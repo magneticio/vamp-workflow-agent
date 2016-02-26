@@ -79,17 +79,8 @@ function npm_make {
 }
 
 function docker_make {
-
     append_to=${dir}/${target_docker}/Dockerfile
     cp ${dir}/Dockerfile ${append_to}
-
-    echo "${green}appending common code to: ${append_to} ${reset}"
-    function append() {
-        printf "\n$1\n" >> ${append_to}
-    }
-
-    append "ADD ${assembly_go} /opt"
-    append "ENTRYPOINT [\"/opt/vamp/vamp-workflow-agent\"]"
 }
 
 function vamp_archive {
