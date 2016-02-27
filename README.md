@@ -42,7 +42,7 @@ Alternatively using the `build.sh` script:
 ```
 Deliverable is in `target/go` directory.
 
-Released binaries can be [downloaded](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent).
+Released binaries can be also [downloaded](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent).
  
 ## Building Docker Images
 
@@ -56,7 +56,7 @@ Usage of ./build.sh:
   -r|--remove Remove Docker image.
   -m|--make   Build the binary and copy it to the Docker directories.
   -b|--build  Build Docker image.
-
+  -a|--all    Build all binaries, by default only linux:amd64.
 ```
 
 ## Executing Workflow
