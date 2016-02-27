@@ -22,7 +22,7 @@ do
     echo "${DELIVERABLE} already uploaded"
   else
     echo "Uploading ${DELIVERABLE} to Bintray"
-    curl -v -T ${DIR}/target/docker/vamp.tar.gz \
+    curl -v -T ${DIR}/target/docker/${DELIVERABLE} \
      -u${BINTRAY_USER}:${BINTRAY_API_KEY} \
      -H "X-Bintray-Package:vamp-workflow-agent" \
      -H "X-Bintray-Version:$VERSION" \
