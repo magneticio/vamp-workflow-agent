@@ -85,7 +85,7 @@ func main() {
     err = setEnvironmentVariables()
 
     if err != nil {
-        logger.Panic("Can't set eEnvironment variables: ", err)
+        logger.Panic("Can't set environment variables: ", err)
         return
     }
 
