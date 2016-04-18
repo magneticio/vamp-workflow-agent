@@ -1,6 +1,6 @@
 FROM alpine:3.3
 
-ENV VAMP_WORKFLOW_VERSION=0.8.4
+ENV VAMP_WORKFLOW_VERSION=0.8.5
 
 # Node.js installation is based on: https://github.com/mhart/alpine-node
 

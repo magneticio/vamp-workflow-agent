@@ -92,12 +92,12 @@ More details: [package.json](https://github.com/magneticio/vamp-workflow-agent/b
 
 Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/).
 
-[![](https://badge.imagelayers.io/magneticio/vamp-workflow-agent:0.8.4.svg)](https://imagelayers.io/?images=magneticio/vamp-workflow-agent:0.8.4)
+[![](https://badge.imagelayers.io/magneticio/vamp-workflow-agent:0.8.5.svg)](https://imagelayers.io/?images=magneticio/vamp-workflow-agent:0.8.5)
 
 Example:
 
 ```
-docker run magneticio/vamp-workflow-agent:0.8.4 \
+docker run magneticio/vamp-workflow-agent:0.8.5 \
            -elasticsearchConnection=localhost:9200 \
            -storeType=zookeeper \
            -storeConnection=localhost:2181 \

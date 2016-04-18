@@ -43,7 +43,7 @@ func main() {
     flag.Parse()
 
     if *logo {
-        logger.Notice(printLogo("0.8.4"))
+        logger.Notice(printLogo("0.8.5"))
     }
 
     if *help {
