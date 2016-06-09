@@ -10,8 +10,6 @@ Vamp Workflow Agent reads workflow JavaScript file from key-value store [ZooKeep
 $ ./vamp-workflow-agent -help
                                        
 Usage of ./vamp-workflow-agent:
-  -elasticsearchConnection string
-        Elasticsearch connection string.
   -help
         Print usage.
   -logo
@@ -74,17 +72,10 @@ Set environment variables:
 - `VAMP_KEY_VALUE_STORE_CONNECTION=$storeConnection`
 - `VAMP_KEY_VALUE_STORE_ROOT_PATH=$rootPath`
 - `VAMP_WORKFLOW_DIRECTORY=$workflowPath`
-- `VAMP_ELASTICSEARCH_CONNECTION=$elasticsearchConnection`
 
 By default in Docker image the following npm packages are installed (in `$workflowPath`) and available to workflow script:
 
-- [underscore](https://github.com/jashkenas/underscore)
-- [lodash](https://github.com/elastic/elasticsearch-js)
-- [highland](https://github.com/caolan/highland)
-- [elasticsearch](https://github.com/elastic/elasticsearch-js)
-- [node-zookeeper-client](https://github.com/alexguan/node-zookeeper-client)
-- [consul](https://github.com/silas/node-consul)
-- [node-etcd](https://github.com/stianeikeland/node-etcd)
+- [vamp-node-client](https://github.com/magneticio/vamp-node-client)
 
 More details: [package.json](https://github.com/magneticio/vamp-workflow-agent/blob/master/package.json)
 
@@ -98,7 +89,6 @@ Example:
 
 ```
 docker run magneticio/vamp-workflow-agent:0.8.5 \
-           -elasticsearchConnection=localhost:9200 \
            -storeType=zookeeper \
            -storeConnection=localhost:2181 \
            -rootPath=/scripts

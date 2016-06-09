@@ -32,7 +32,7 @@ function parse_command_line() {
         -l|--list)
         flag_list=1
         ;;
-        -c|--clean)
+        -r|--remove)
         flag_clean=1
         ;;
         -m|--make)
@@ -105,9 +105,10 @@ function go_make() {
 }
 
 function npm_make {
-    cp ${dir}/package.json ${target_vamp}
     cd ${target_vamp}
-    npm install
+    npm install git://github.com/magneticio/vamp-node-client
+    npm install -g removeNPMAbsolutePaths
+    removeNPMAbsolutePaths $(pwd)
 }
 
 function docker_make {
@@ -120,8 +121,8 @@ function docker_make {
         printf "\n$1\n" >> ${append_to}
     }
 
-    append "ADD ${project}_${version}_linux_amd64.tar.gz /opt"
-    append "ENTRYPOINT [\"/opt/vamp/${project}\"]"
+    append "ADD ${project}_${version}_linux_amd64.tar.gz /usr/local"
+    append "ENTRYPOINT [\"/usr/local/vamp/${project}\"]"
 }
 
 function docker_build {

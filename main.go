@@ -13,10 +13,7 @@ var (
     storeType = flag.String("storeType", "", "zookeeper, consul or etcd.")
     storeConnection = flag.String("storeConnection", "", "Key-value store connection string.")
     rootPath = flag.String("rootPath", "", "Scheduled workflow key-value store root path.")
-
-    workflowPath = flag.String("workflowPath", "/opt/vamp", "Path to workflow files.")
-
-    elasticsearchConnection = flag.String("elasticsearchConnection", "", "Elasticsearch connection string.")
+    workflowPath = flag.String("workflowPath", "/usr/local/vamp", "Path to workflow files.")
 
     logo = flag.Bool("logo", true, "Show logo.")
     help = flag.Bool("help", false, "Print usage.")
@@ -61,7 +58,6 @@ func main() {
     logger.Info("Key-value store connection    : %s", *storeConnection)
     logger.Info("Key-value store root key path : %s", *rootPath)
     logger.Info("Workflow file path            : %s", *workflowPath)
-    logger.Info("Elasticsearch connection      : %s", *elasticsearchConnection)
 
     workflowKey := *rootPath + "/workflow"
     logger.Info("Reading workflow from         : %s", workflowKey)
@@ -116,7 +112,6 @@ func setEnvironmentVariables() error {
     environmentVariables["VAMP_KEY_VALUE_STORE_CONNECTION"] = *storeConnection
     environmentVariables["VAMP_KEY_VALUE_STORE_ROOT_PATH"] = *rootPath
     environmentVariables["VAMP_WORKFLOW_DIRECTORY"] = *workflowPath
-    environmentVariables["VAMP_ELASTICSEARCH_CONNECTION"] = *elasticsearchConnection
 
     for key, value := range environmentVariables {
         err := os.Setenv(key, value)
