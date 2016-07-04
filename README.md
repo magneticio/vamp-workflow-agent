@@ -21,7 +21,7 @@ Usage of ./vamp-workflow-agent:
   -storeType string
         zookeeper, consul or etcd.
   -workflowPath string
-        Path to workflow files. (default "/opt/vamp/workflow")
+        Path to workflow files. (default "/usr/local/vamp/workflow")
 ```
 
 Some arguments are mandatory and if they are not provided, agent will try to get them from environment variables. 
