@@ -68,6 +68,16 @@ function go_make() {
     godep restore
     go install
 
+    version="$( git describe )"
+
+cat <<EOF >${dir}/version.go
+package main
+
+var (
+    version = "${version}"
+)
+EOF
+
     for goos in darwin linux windows; do
       for goarch in 386 amd64; do
 

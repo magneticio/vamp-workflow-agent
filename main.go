@@ -21,7 +21,7 @@ var (
     logger = createLogger()
 )
 
-func printLogo(version string) string {
+func printLogo() string {
     return `
 ██╗   ██╗ █████╗ ███╗   ███╗██████╗
 ██║   ██║██╔══██╗████╗ ████║██╔══██╗
@@ -40,7 +40,7 @@ func main() {
     flag.Parse()
 
     if *logo {
-        logger.Notice(printLogo("0.8.5"))
+        logger.Notice(printLogo())
     }
 
     if *help {

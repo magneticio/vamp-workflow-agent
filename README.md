@@ -29,15 +29,20 @@ For environment variable names check out [Executing Workflow](https://github.com
 
 ## Building Binary
 
+Using the `build.sh` script:
+```
+  ./build.sh --make
+```
+
+Alternatively:
+
 - `go get github.com/tools/godep`
 - `godep restore`
 - `go install`
 - `CGO_ENABLED=0 go build -v -a -installsuffix cgo`
 
-Alternatively using the `build.sh` script:
-```
-  ./build.sh --make
-```
+>Note: `./build.sh` generates `version.go` which is needed for compilation.
+
 Deliverable is in `target/go` directory.
 
 Released binaries can be also [downloaded](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent).
