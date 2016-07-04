@@ -2,10 +2,10 @@ language: go
 sudo: false
 go: 1.6.2
 script:
-  sh build.sh --make --all
+  bash build.sh --make --all
 after_success:
   if [ -n "TRAVIS_TAG" ] && [ "$(git describe --tags)" = "$(git describe --abbrev=0)" ]; then
-    sh $TRAVIS_BUILD_DIR/.travis-bintray.sh
+    bash $TRAVIS_BUILD_DIR/.travis-bintray.sh
   fi
 env:
   global:
