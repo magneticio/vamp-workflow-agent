@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-if [ "$#" -ne 1 ]; then
-    SCRIPTNAME=$(basename "$0")
-    echo "Usage: ${SCRIPTNAME} <version>"
-    exit 1
-fi
-
 VERSION="$( git describe --tags )"
 
 : ${BINTRAY_USER:?"No BINTRAY_USER set"}
