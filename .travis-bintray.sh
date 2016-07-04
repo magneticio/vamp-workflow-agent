@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-VERSION="$( git describe )"
+VERSION="$( git describe --tags )"
 
 : ${BINTRAY_USER:?"No BINTRAY_USER set"}
 : ${BINTRAY_API_KEY:?"No BINTRAY_API_KEY set"}

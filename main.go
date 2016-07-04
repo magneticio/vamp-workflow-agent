@@ -10,6 +10,8 @@ import (
 )
 
 var (
+    version string
+
     storeType = flag.String("storeType", "", "zookeeper, consul or etcd.")
     storeConnection = flag.String("storeConnection", "", "Key-value store connection string.")
     rootPath = flag.String("rootPath", "", "Scheduled workflow key-value store root path.")

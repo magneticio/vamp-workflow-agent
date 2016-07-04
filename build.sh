@@ -6,7 +6,7 @@ reset=`tput sgr0`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
 
-version="$( git describe )"
+version="$( git describe --tags )"
 target='target'
 target_vamp=${target}'/vamp'
 target_docker=${target}'/docker'
@@ -61,25 +61,11 @@ function build_help() {
     echo "${yellow}  -a|--all    ${green}Build all binaries, by default only linux:amd64.${reset}"
 }
 
-function add_version() {
-
-  echo "${green}setting version:  ${yellow}${version}${reset}"
-
-  cat <<EOF >${GOPATH}/src/github.com/magneticio/vamp-workflow-agent/version.go
-package main
-
-var (
-    version = "${version}"
-)
-EOF
-}
-
 function go_make() {
     cd ${dir}
 
     go get github.com/tools/godep
     godep restore
-    add_version
     go install
 
     for goos in darwin linux windows; do
@@ -94,7 +80,7 @@ function go_make() {
 
           echo "${green}building ${yellow}vamp-workflow-agent_${version}_${goos}_${goarch}${reset}"
 
-          CGO_ENABLED=0 go build -a -installsuffix cgo
+          CGO_ENABLED=0 go build -ldflags "-X main.version=${version}" -a -installsuffix cgo
 
           if [ "${goos}" == "windows" ]; then
               mv ${dir}/${project}.exe ${target_vamp}
