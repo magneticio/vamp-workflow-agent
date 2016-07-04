@@ -6,7 +6,7 @@ reset=`tput sgr0`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
 
-version="0.8.5"
+version="$( git describe )"
 target='target'
 target_vamp=${target}'/vamp'
 target_docker=${target}'/docker'
@@ -61,22 +61,26 @@ function build_help() {
     echo "${yellow}  -a|--all    ${green}Build all binaries, by default only linux:amd64.${reset}"
 }
 
-function go_make() {
-    cd ${dir}
+function add_version() {
 
-    go get github.com/tools/godep
-    godep restore
-    go install
+  echo "${green}setting version:  ${yellow}${version}${reset}"
 
-    version="$( git describe )"
-
-cat <<EOF >${GOPATH}/src/github.com/magneticio/vamp-workflow-agent/version.go
+  cat <<EOF >${GOPATH}/src/github.com/magneticio/vamp-workflow-agent/version.go
 package main
 
 var (
     version = "${version}"
 )
 EOF
+}
+
+function go_make() {
+    cd ${dir}
+
+    go get github.com/tools/godep
+    godep restore
+    add_version
+    go install
 
     for goos in darwin linux windows; do
       for goarch in 386 amd64; do
