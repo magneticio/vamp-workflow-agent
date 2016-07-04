@@ -70,7 +70,7 @@ function go_make() {
 
     version="$( git describe )"
 
-cat <<EOF >${dir}/version.go
+cat <<EOF >${GOPATH}/src/github.com/magneticio/vamp-workflow-agent/version.go
 package main
 
 var (
