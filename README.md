@@ -41,7 +41,7 @@ Alternatively:
 - `go install`
 - `CGO_ENABLED=0 go build -v -a -installsuffix cgo`
 
->Note: `./build.sh` generates `version.go` which is needed for compilation.
+>Note: `./build.sh` sets git tag based version to `version.go`.
 
 Deliverable is in `target/go` directory.
 
