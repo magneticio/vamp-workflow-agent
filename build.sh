@@ -106,7 +106,7 @@ function go_make() {
 
 function npm_make {
     cd ${target_vamp}
-    npm --version
+    echo "${green}npm version: $( npm --version )${reset}"
     npm install git://github.com/magneticio/vamp-node-client
     npm install -g removeNPMAbsolutePaths
     removeNPMAbsolutePaths $(pwd)
