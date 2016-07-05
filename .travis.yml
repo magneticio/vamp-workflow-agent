@@ -8,6 +8,7 @@ before_install:
   - git checkout `git describe --abbrev=0 --tags`
   - source ~/.nvm/nvm.sh
   - nvm install 6.2.2
+  - cd $TRAVIS_BUILD_DIR
 script: |
   bash $TRAVIS_BUILD_DIR/build.sh --make --all
 after_success: |
