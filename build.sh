@@ -114,15 +114,17 @@ function npm_make {
 function docker_make {
 
     append_to=${dir}/${target_docker}/Dockerfile
-    cat ${dir}/Dockerfile | grep -v ADD | grep -v ENTRYPOINT > ${append_to}
 
-    echo "${green}appending common code to: ${append_to} ${reset}"
-    function append() {
-        printf "\n$1\n" >> ${append_to}
-    }
-
-    append "ADD ${project}_${version}_linux_amd64.tar.gz /usr/local"
-    append "ENTRYPOINT [\"/usr/local/vamp/${project}\"]"
+    cp ${dir}/Dockerfile  ${append_to}
+#    sed '/ENV/q' ${dir}/Dockerfile > ${append_to}
+#
+#    echo "${green}appending common code to: ${append_to} ${reset}"
+#    function append() {
+#        printf "\n$1\n" >> ${append_to}
+#    }
+#
+#    append "ADD ${project}_${version}_linux_amd64.tar.gz /usr/local"
+#    append "ENTRYPOINT [\"/usr/local/vamp/${project}\"]"
 }
 
 function docker_build {
