@@ -87,12 +87,12 @@ More details: [package.json](https://github.com/magneticio/vamp-workflow-agent/b
 
 Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/).
 
-[![](https://badge.imagelayers.io/magneticio/vamp-workflow-agent:0.9.0.svg)](https://imagelayers.io/?images=magneticio/vamp-workflow-agent:0.9.0)
+[![](https://badge.imagelayers.io/magneticio/vamp-workflow-agent:0.9.1.svg)](https://imagelayers.io/?images=magneticio/vamp-workflow-agent:0.9.1)
 
 Example:
 
 ```
-docker run magneticio/vamp-workflow-agent:0.9.0 \
+docker run magneticio/vamp-workflow-agent:0.9.1 \
            -storeType=zookeeper \
            -storeConnection=localhost:2181 \
            -storePath=/scripts
