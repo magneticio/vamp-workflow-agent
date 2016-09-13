@@ -14,8 +14,8 @@ var (
 
     storeType = flag.String("storeType", "", "zookeeper, consul or etcd.")
     storeConnection = flag.String("storeConnection", "", "Key-value store connection string.")
-    rootPath = flag.String("rootPath", "", "Scheduled workflow key-value store root path.")
-    workflowPath = flag.String("workflowPath", "/usr/local/vamp", "Path to workflow files.")
+    storePath = flag.String("storePath", "", "Key-value store path to workflow script.")
+    filePath = flag.String("filePath", "/usr/local/vamp", "Path to workflow files.")
 
     logo = flag.Bool("logo", true, "Show logo.")
     help = flag.Bool("help", false, "Print usage.")
@@ -51,17 +51,17 @@ func main() {
     }
 
     check(storeType, "VAMP_KEY_VALUE_STORE_TYPE", "Key-value store type not specified.")
-    check(rootPath, "VAMP_KEY_VALUE_STORE_ROOT_PATH", "Key-value store root key path not specified.")
+    check(storePath, "VAMP_KEY_VALUE_STORE_PATH", "Key-value store root key path not specified.")
     check(storeConnection, "VAMP_KEY_VALUE_STORE_CONNECTION", "Key-value store connection not specified.")
 
     logger.Notice("Starting Vamp Workflow Agent")
 
     logger.Info("Key-value store type          : %s", *storeType)
     logger.Info("Key-value store connection    : %s", *storeConnection)
-    logger.Info("Key-value store root key path : %s", *rootPath)
-    logger.Info("Workflow file path            : %s", *workflowPath)
+    logger.Info("Key-value store root key path : %s", *storePath)
+    logger.Info("Workflow file path            : %s", *filePath)
 
-    workflowKey := *rootPath + "/workflow"
+    workflowKey := *storePath
     logger.Info("Reading workflow from         : %s", workflowKey)
 
     content, err := readFromKeyValueStore(workflowKey)
@@ -71,7 +71,7 @@ func main() {
         return
     }
 
-    workflowFile := *workflowPath + "/workflow.js"
+    workflowFile := *filePath + "/workflow.js"
 
     err = writeWorkflowScript(workflowFile, content)
 
@@ -112,8 +112,8 @@ func setEnvironmentVariables() error {
 
     environmentVariables["VAMP_KEY_VALUE_STORE_TYPE"] = *storeType
     environmentVariables["VAMP_KEY_VALUE_STORE_CONNECTION"] = *storeConnection
-    environmentVariables["VAMP_KEY_VALUE_STORE_ROOT_PATH"] = *rootPath
-    environmentVariables["VAMP_WORKFLOW_DIRECTORY"] = *workflowPath
+    environmentVariables["VAMP_KEY_VALUE_STORE_PATH"] = *storePath
+    environmentVariables["VAMP_WORKFLOW_DIRECTORY"] = *filePath
 
     for key, value := range environmentVariables {
         err := os.Setenv(key, value)
