@@ -11,7 +11,6 @@ target='target'
 target_vamp=${target}'/vamp'
 target_docker=${target}'/docker'
 project="vamp-workflow-agent"
-docker_image_name="magneticio/${project}:${version}"
 
 cd ${dir}
 
@@ -44,6 +43,10 @@ function parse_command_line() {
         ;;
         -a|--all)
         flag_build_all=1
+        ;;
+        -v=*|--version=*)
+        version="${key#*=}"
+        shift
         ;;
         *)
         ;;
@@ -143,6 +146,10 @@ function docker_image {
 }
 
 function process() {
+
+    docker_image_name="magneticio/${project}:${version}"
+
+    echo "${green}version: ${version}${reset}"
 
     rm -Rf ${dir}/${target} 2> /dev/null && mkdir -p ${dir}/${target_docker} && mkdir -p ${target_vamp}
 
