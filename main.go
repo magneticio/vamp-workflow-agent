@@ -2,11 +2,12 @@ package main
 
 import (
     "flag"
-    "bytes"
+    "os"
+    "log"
+    "io"
+    "syscall"
     "os/exec"
     "io/ioutil"
-    "syscall"
-    "os"
 )
 
 var (
@@ -128,21 +129,31 @@ func setEnvironmentVariables() error {
 func executeWorkflowScript(workflowFile string) int {
 
     logger.Info("Executing 'workflow.js' by Node.js.")
-    var cmd *exec.Cmd
-    cmd = exec.Command("node", workflowFile)
+    cmd := exec.Command("node", workflowFile)
 
-    var stdout, stderr bytes.Buffer
-    cmd.Stdout = &stdout
-    cmd.Stderr = &stderr
+    stdout, err := cmd.StdoutPipe()
+    if err != nil {
+        log.Fatal(err)
+    }
 
-    err := cmd.Run()
+    stderr, err := cmd.StderrPipe()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    err = cmd.Start()
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    go io.Copy(os.Stdout, stdout)
+    go io.Copy(os.Stderr, stderr)
 
     exitStatusCode := 0
 
-    logger.Info("Execution standard output: %s", string(stdout.Bytes()[:]))
-
+    err = cmd.Wait()
     if err != nil {
-        logger.Error("Error during execution: %s, %s", err.Error(), string(stderr.Bytes()[:]))
+        logger.Error("Error during execution of the workflow script.")
         if exitError, ok := err.(*exec.ExitError); ok {
             if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
                 exitStatusCode = status.ExitStatus()
@@ -150,7 +161,7 @@ func executeWorkflowScript(workflowFile string) int {
         }
     }
 
-    logger.Notice("Exit status code: %d", exitStatusCode)
+    logger.Notice("Workflow exit status code: %d", exitStatusCode)
 
     return exitStatusCode
 }

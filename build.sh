@@ -6,7 +6,7 @@ reset=`tput sgr0`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
 
-version="$( git describe --tags )"
+version="katana"
 target='target'
 target_vamp=${target}'/vamp'
 target_docker=${target}'/docker'
