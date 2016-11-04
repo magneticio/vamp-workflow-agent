@@ -23,7 +23,7 @@ func run(workflowFile string) {
         if (running) {
             return
         }
-        defer func () {
+        defer func() {
             running = false
         }()
         running = true
@@ -37,9 +37,9 @@ func run(workflowFile string) {
 
     for {
         select {
-        case <- ticker.C:
+        case <-ticker.C:
             go execute()
-        case <- quit:
+        case <-quit:
             ticker.Stop()
             return
         }
@@ -69,17 +69,7 @@ func executeWorkflowScript(workflowFile string) {
     go processOutput(stdout, false)
     go processOutput(stderr, true)
 
-    done := make(chan error, 1)
-    go func() {
-        done <- cmd.Wait()
-    }()
-    select {
-    case <-time.After(time.Duration(*executionTimeout) * time.Second):
-        if err := cmd.Process.Kill(); err != nil {
-            logger.Error("Failed to kill the workflow process: ", err)
-        }
-        logger.Notice("Workflow process is killed as timeout reached.")
-    case err := <-done:
+    finished := func(err error) {
         exitStatusCode := 0
         if err != nil {
             logger.Error("Error during execution of the workflow script.")
@@ -91,6 +81,25 @@ func executeWorkflowScript(workflowFile string) {
         }
         logger.Notice("Workflow exit status code: %d", exitStatusCode)
     }
+
+    if *executionTimeout == 0 {
+        finished(cmd.Wait())
+        return
+    }
+
+    done := make(chan error, 1)
+    go func() {
+        done <- cmd.Wait()
+    }()
+    select {
+    case <-time.After(time.Duration(*executionTimeout) * time.Second):
+        if err := cmd.Process.Kill(); err != nil {
+            logger.Error("Failed to kill the workflow process: ", err)
+        }
+        logger.Notice("Workflow process is killed as timeout reached.")
+    case err := <-done:
+        finished(err)
+    }
 }
 
 func processOutput(rd io.Reader, error bool) {
@@ -100,7 +109,7 @@ func processOutput(rd io.Reader, error bool) {
         if err != nil || err == io.EOF {
             break
         }
-        message := "WORKFLOW [" + strings.TrimSuffix(input, "\n") + "]"
+        message := "WORKFLOW " + strings.TrimSuffix(input, "\n")
         if error {
             logger.Error(message);
         } else {

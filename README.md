@@ -23,6 +23,10 @@ Usage of ./vamp-workflow-agent:
         zookeeper, consul or etcd.
   -filePath string
         Path to workflow files. (default "/usr/local/vamp/workflow")
+  -executionPeriod int
+        Period between successive executions in seconds (0 if disabled).
+  -executionTimeout int
+        Maximum allowed execution time in seconds (0 if no timeout).
 ```
 
 Some arguments are mandatory and if they are not provided, agent will try to get them from environment variables. 
@@ -70,14 +74,14 @@ Vamp Workflow Agent:
 - sets environment variables
 - executes `node $filePath/workflow.js`
 
-Set environment variables:
+Using environment variables:
 
-- `VAMP_KEY_VALUE_STORE_TYPE=$storeType`
-- `VAMP_KEY_VALUE_STORE_CONNECTION=$storeConnection`
-- `VAMP_KEY_VALUE_STORE_PATH=$storePath`
-- `VAMP_WORKFLOW_DIRECTORY=$filePath`
-
-By default in Docker image the following npm packages are installed (in `$filePath`) and available to workflow script:
+- `VAMP_KEY_VALUE_STORE_TYPE <=> $storeType`
+- `VAMP_KEY_VALUE_STORE_CONNECTION <=> $storeConnection`
+- `VAMP_KEY_VALUE_STORE_PATH <=> $storePath`
+- `VAMP_WORKFLOW_DIRECTORY <=> $filePath`
+- `WORKFLOW_EXEUTION_PERIOD <=> $executionPeriod`
+- `WORKFLOW_EXEUTION_TIMEOUT <=> $executionTimeout`
 
 - [vamp-node-client](https://github.com/magneticio/vamp-node-client)
 
@@ -95,6 +99,8 @@ Example:
 docker run magneticio/vamp-workflow-agent:katana \
            -storeType=zookeeper \
            -storeConnection=localhost:2181 \
+           -executionPeriod=0 \
+           -executionTimeout=10 \
            -storePath=/scripts
 ```
 

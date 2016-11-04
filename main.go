@@ -15,7 +15,7 @@ var (
     storePath = flag.String("storePath", "", "Key-value store path to workflow script.")
     filePath = flag.String("filePath", "/usr/local/vamp", "Path to workflow files.")
     executionPeriod = flag.Int("executionPeriod", -1, "Period between successive executions in seconds (0 if disabled).")
-    executionTimeout = flag.Int("executionTimeout", -1, "Maximum allowed execution time in seconds.")
+    executionTimeout = flag.Int("executionTimeout", -1, "Maximum allowed execution time in seconds (0 if no timeout).")
 
     logo = flag.Bool("logo", true, "Show logo.")
     help = flag.Bool("help", false, "Print usage.")
@@ -55,12 +55,7 @@ func main() {
     checkString(storeConnection, "VAMP_KEY_VALUE_STORE_CONNECTION", "Key-value store connection not specified.")
 
     checkInt(executionPeriod, "WORKFLOW_EXEUTION_PERIOD", "Execution period must be specified and it must be equal or greater than 0.")
-    checkInt(executionTimeout, "WORKFLOW_EXEUTION_TIMEOUT", "Execution timeout must be specified and it must be greater than 0.")
-
-    if *executionTimeout <= 0 {
-        logger.Panic("Execution timeout must be greater than 0.")
-        return
-    }
+    checkInt(executionTimeout, "WORKFLOW_EXEUTION_TIMEOUT", "Execution timeout must be specified and it must be equal or greater than 0.")
 
     logger.Notice("Starting Vamp Workflow Agent")
 
