@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/magneticio/vamp-workflow-agent",
-	"GoVersion": "go1.5.3",
+	"GoVersion": "go1.7.1",
 	"Deps": [
 		{
 			"ImportPath": "github.com/coreos/etcd/client",

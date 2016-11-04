@@ -38,10 +38,10 @@ func readFromEtcd(path string) ([]byte, error) {
         logger.Fatal(err)
         return nil, err
     }
-    api := client.NewKeysAPI(c)
+    etcdApi := client.NewKeysAPI(c)
 
     logger.Info("etcd getting '%s' key value.", path)
-    response, err := api.Get(context.Background(), path, nil)
+    response, err := etcdApi.Get(context.Background(), path, nil)
     if err != nil {
         return nil, err
     } else {
@@ -55,13 +55,13 @@ func readFromConsul(path string) ([]byte, error) {
 
     conf := api.DefaultConfig()
     conf.Address = *storeConnection
-    client, err := api.NewClient(conf)
+    consulClient, err := api.NewClient(conf)
 
     if err != nil {
         return nil, err
     }
 
-    kv := client.KV()
+    kv := consulClient.KV()
 
     logger.Info("Consul getting '%s' key value.", path)
     pair, _, err := kv.Get(strings.TrimPrefix(path, "/"), nil)

@@ -8,6 +8,8 @@ import (
     "syscall"
     "os/exec"
     "io/ioutil"
+    "bufio"
+    "strings"
 )
 
 var (
@@ -17,6 +19,8 @@ var (
     storeConnection = flag.String("storeConnection", "", "Key-value store connection string.")
     storePath = flag.String("storePath", "", "Key-value store path to workflow script.")
     filePath = flag.String("filePath", "/usr/local/vamp", "Path to workflow files.")
+    executionPeriod = flag.String("executionPeriod", "0", "Period between successive executions in seconds (0 if disabled).")
+    executionTimeout = flag.String("executionTimeout", "5", "Maximum allowed execution time in seconds.")
 
     logo = flag.Bool("logo", true, "Show logo.")
     help = flag.Bool("help", false, "Print usage.")
@@ -54,6 +58,8 @@ func main() {
     check(storeType, "VAMP_KEY_VALUE_STORE_TYPE", "Key-value store type not specified.")
     check(storePath, "VAMP_KEY_VALUE_STORE_PATH", "Key-value store root key path not specified.")
     check(storeConnection, "VAMP_KEY_VALUE_STORE_CONNECTION", "Key-value store connection not specified.")
+    check(executionPeriod, "WORKFLOW_EXEUTION_PERIOD", "Execution period not specified.")
+    check(executionTimeout, "WORKFLOW_EXEUTION_TIMEOUT", "Execution timeout not specified.")
 
     logger.Notice("Starting Vamp Workflow Agent")
 
@@ -61,6 +67,8 @@ func main() {
     logger.Info("Key-value store connection    : %s", *storeConnection)
     logger.Info("Key-value store root key path : %s", *storePath)
     logger.Info("Workflow file path            : %s", *filePath)
+    logger.Info("Workflow execution period     : %s", *executionPeriod)
+    logger.Info("Workflow execution timeout    : %s", *executionTimeout)
 
     workflowKey := *storePath
     logger.Info("Reading workflow from         : %s", workflowKey)
@@ -88,9 +96,7 @@ func main() {
         return
     }
 
-    exitStatusCode := executeWorkflowScript(workflowFile)
-
-    os.Exit(exitStatusCode)
+    run(workflowFile)
 }
 
 func check(argument *string, environmentVariable, panic string) {
@@ -126,6 +132,13 @@ func setEnvironmentVariables() error {
     return nil
 }
 
+func run(workflowFile string) {
+
+    exitStatusCode := executeWorkflowScript(workflowFile)
+
+    os.Exit(exitStatusCode)
+}
+
 func executeWorkflowScript(workflowFile string) int {
 
     logger.Info("Executing 'workflow.js' by Node.js.")
@@ -146,8 +159,8 @@ func executeWorkflowScript(workflowFile string) int {
         log.Fatal(err)
     }
 
-    go io.Copy(os.Stdout, stdout)
-    go io.Copy(os.Stderr, stderr)
+    go processOutput(bufio.NewReader(stdout), false)
+    go processOutput(bufio.NewReader(stderr), true)
 
     exitStatusCode := 0
 
@@ -164,4 +177,19 @@ func executeWorkflowScript(workflowFile string) int {
     logger.Notice("Workflow exit status code: %d", exitStatusCode)
 
     return exitStatusCode
+}
+
+func processOutput(reader *bufio.Reader, error bool) {
+    for {
+        input, err := reader.ReadString('\n')
+        if err != nil && err == io.EOF {
+            break
+        }
+        message := "WORKFLOW " + strings.TrimSuffix(input, "\n")
+        if error {
+            logger.Error(message);
+        } else {
+            logger.Info(message);
+        }
+    }
 }
