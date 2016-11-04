@@ -3,13 +3,8 @@ package main
 import (
     "flag"
     "os"
-    "log"
-    "io"
-    "syscall"
-    "os/exec"
     "io/ioutil"
-    "bufio"
-    "strings"
+    "strconv"
 )
 
 var (
@@ -19,8 +14,8 @@ var (
     storeConnection = flag.String("storeConnection", "", "Key-value store connection string.")
     storePath = flag.String("storePath", "", "Key-value store path to workflow script.")
     filePath = flag.String("filePath", "/usr/local/vamp", "Path to workflow files.")
-    executionPeriod = flag.String("executionPeriod", "0", "Period between successive executions in seconds (0 if disabled).")
-    executionTimeout = flag.String("executionTimeout", "5", "Maximum allowed execution time in seconds.")
+    executionPeriod = flag.Int("executionPeriod", -1, "Period between successive executions in seconds (0 if disabled).")
+    executionTimeout = flag.Int("executionTimeout", -1, "Maximum allowed execution time in seconds.")
 
     logo = flag.Bool("logo", true, "Show logo.")
     help = flag.Bool("help", false, "Print usage.")
@@ -55,11 +50,17 @@ func main() {
         return
     }
 
-    check(storeType, "VAMP_KEY_VALUE_STORE_TYPE", "Key-value store type not specified.")
-    check(storePath, "VAMP_KEY_VALUE_STORE_PATH", "Key-value store root key path not specified.")
-    check(storeConnection, "VAMP_KEY_VALUE_STORE_CONNECTION", "Key-value store connection not specified.")
-    check(executionPeriod, "WORKFLOW_EXEUTION_PERIOD", "Execution period not specified.")
-    check(executionTimeout, "WORKFLOW_EXEUTION_TIMEOUT", "Execution timeout not specified.")
+    checkString(storeType, "VAMP_KEY_VALUE_STORE_TYPE", "Key-value store type not specified.")
+    checkString(storePath, "VAMP_KEY_VALUE_STORE_PATH", "Key-value store root key path not specified.")
+    checkString(storeConnection, "VAMP_KEY_VALUE_STORE_CONNECTION", "Key-value store connection not specified.")
+
+    checkInt(executionPeriod, "WORKFLOW_EXEUTION_PERIOD", "Execution period must be specified and it must be equal or greater than 0.")
+    checkInt(executionTimeout, "WORKFLOW_EXEUTION_TIMEOUT", "Execution timeout must be specified and it must be greater than 0.")
+
+    if *executionTimeout <= 0 {
+        logger.Panic("Execution timeout must be greater than 0.")
+        return
+    }
 
     logger.Notice("Starting Vamp Workflow Agent")
 
@@ -67,8 +68,8 @@ func main() {
     logger.Info("Key-value store connection    : %s", *storeConnection)
     logger.Info("Key-value store root key path : %s", *storePath)
     logger.Info("Workflow file path            : %s", *filePath)
-    logger.Info("Workflow execution period     : %s", *executionPeriod)
-    logger.Info("Workflow execution timeout    : %s", *executionTimeout)
+    logger.Info("Workflow execution period     : %d", *executionPeriod)
+    logger.Info("Workflow execution timeout    : %d", *executionTimeout)
 
     workflowKey := *storePath
     logger.Info("Reading workflow from         : %s", workflowKey)
@@ -99,10 +100,23 @@ func main() {
     run(workflowFile)
 }
 
-func check(argument *string, environmentVariable, panic string) {
+func checkString(argument *string, environmentVariable, panic string) {
     if len(*argument) == 0 {
         *argument = os.Getenv(environmentVariable)
         if len(*argument) == 0 {
+            logger.Panic(panic)
+        }
+    }
+}
+
+func checkInt(argument *int, environmentVariable, panic string) {
+    if *argument < 0 {
+        number, err := strconv.Atoi(os.Getenv(environmentVariable))
+        if err != nil {
+            logger.Panic(panic)
+        }
+        *argument = number
+        if *argument < 0 {
             logger.Panic(panic)
         }
     }
@@ -130,66 +144,4 @@ func setEnvironmentVariables() error {
     }
 
     return nil
-}
-
-func run(workflowFile string) {
-
-    exitStatusCode := executeWorkflowScript(workflowFile)
-
-    os.Exit(exitStatusCode)
-}
-
-func executeWorkflowScript(workflowFile string) int {
-
-    logger.Info("Executing 'workflow.js' by Node.js.")
-    cmd := exec.Command("node", workflowFile)
-
-    stdout, err := cmd.StdoutPipe()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    stderr, err := cmd.StderrPipe()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    err = cmd.Start()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    go processOutput(bufio.NewReader(stdout), false)
-    go processOutput(bufio.NewReader(stderr), true)
-
-    exitStatusCode := 0
-
-    err = cmd.Wait()
-    if err != nil {
-        logger.Error("Error during execution of the workflow script.")
-        if exitError, ok := err.(*exec.ExitError); ok {
-            if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
-                exitStatusCode = status.ExitStatus()
-            }
-        }
-    }
-
-    logger.Notice("Workflow exit status code: %d", exitStatusCode)
-
-    return exitStatusCode
-}
-
-func processOutput(reader *bufio.Reader, error bool) {
-    for {
-        input, err := reader.ReadString('\n')
-        if err != nil && err == io.EOF {
-            break
-        }
-        message := "WORKFLOW " + strings.TrimSuffix(input, "\n")
-        if error {
-            logger.Error(message);
-        } else {
-            logger.Info(message);
-        }
-    }
 }
