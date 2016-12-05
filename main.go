@@ -54,8 +54,8 @@ func main() {
     checkString(storePath, "VAMP_KEY_VALUE_STORE_PATH", "Key-value store root key path not specified.")
     checkString(storeConnection, "VAMP_KEY_VALUE_STORE_CONNECTION", "Key-value store connection not specified.")
 
-    checkInt(executionPeriod, "WORKFLOW_EXEUTION_PERIOD", "Execution period must be specified and it must be equal or greater than 0.")
-    checkInt(executionTimeout, "WORKFLOW_EXEUTION_TIMEOUT", "Execution timeout must be specified and it must be equal or greater than 0.")
+    checkInt(executionPeriod, "WORKFLOW_EXECUTION_PERIOD", "Execution period must be specified and it must be equal or greater than 0.")
+    checkInt(executionTimeout, "WORKFLOW_EXECUTION_TIMEOUT", "Execution timeout must be specified and it must be equal or greater than 0.")
 
     logger.Notice("Starting Vamp Workflow Agent")
 
