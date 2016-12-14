@@ -47,8 +47,8 @@ func run(workflowFile string) {
 }
 
 func executeWorkflowScript(workflowFile string) {
-
     logger.Notice("Executing workflow by Node.js.")
+    start := time.Now()
     cmd := exec.Command("node", workflowFile)
 
     stdout, err := cmd.StdoutPipe()
@@ -79,6 +79,8 @@ func executeWorkflowScript(workflowFile string) {
                 }
             }
         }
+        elapsed := time.Since(start)
+        logger.Notice("Workflow execution took: %s", elapsed)
         logger.Notice("Workflow exit status code: %d", exitStatusCode)
     }
 
