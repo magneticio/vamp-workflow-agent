@@ -80,8 +80,8 @@ Using environment variables:
 - `VAMP_KEY_VALUE_STORE_CONNECTION <=> $storeConnection`
 - `VAMP_KEY_VALUE_STORE_PATH <=> $storePath`
 - `VAMP_WORKFLOW_DIRECTORY <=> $filePath`
-- `WORKFLOW_EXECUTION_PERIOD <=> $executionPeriod`
-- `WORKFLOW_EXECUTION_TIMEOUT <=> $executionTimeout`
+- `VAMP_WORKFLOW_EXECUTION_PERIOD <=> $executionPeriod`
+- `VAMP_WORKFLOW_EXECUTION_TIMEOUT <=> $executionTimeout`
 
 - [vamp-node-client](https://github.com/magneticio/vamp-node-client)
 
