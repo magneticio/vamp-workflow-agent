@@ -3,10 +3,8 @@ package main
 import (
     "io"
     "os"
-
     "github.com/op/go-logging"
 )
-
 
 func createLogger() *logging.Logger {
     var logger = logging.MustGetLogger("vamp-workflow-agent")

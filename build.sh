@@ -121,18 +121,8 @@ function npm_make {
 }
 
 function docker_make {
-
-    append_to=${dir}/${target_docker}/Dockerfile
-
-    sed '/ENV/q' ${dir}/Dockerfile > ${append_to}
-
-    echo "${green}appending common code to: ${append_to} ${reset}"
-    function append() {
-        printf "\n$1\n" >> ${append_to}
-    }
-
-    append "ADD ${project}_${version}_linux_amd64.tar.gz /usr/local"
-    append "ENTRYPOINT [\"/usr/local/vamp/${project}\"]"
+    cp ${dir}/Dockerfile ${dir}/${target_docker}/Dockerfile
+    cp ${dir}/vamp-workflow-agent.sh ${dir}/${target_vamp}/vamp-workflow-agent.sh
 }
 
 function docker_build {

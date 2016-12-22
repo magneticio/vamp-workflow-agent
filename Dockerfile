@@ -1,11 +1,8 @@
-FROM magneticio/alpine-node:6.5.0
+FROM node:7.3-alpine
 
-ENV VAMP_WORKFLOW_VERSION=0.9.1
+ADD vamp-workflow-agent_katana_linux_amd64.tar.gz /usr/local
+ADD https://github.com/kelseyhightower/confd/releases/download/v0.11.0/confd-0.11.0-linux-amd64 /usr/bin/confd
 
-ADD https://bintray.com/artifact/download/magnetic-io/downloads/vamp-workflow-agent/vamp-workflow-agent_${VAMP_WORKFLOW_VERSION}_linux_amd64.tar.gz /usr/local
+RUN chmod u+x /usr/bin/confd /usr/local/vamp/vamp-workflow-agent.sh
 
-RUN cd /usr/local/ && \
-    tar xzvf vamp-workflow-agent_${VAMP_WORKFLOW_VERSION}_linux_amd64.tar.gz && \
-    rm -Rf vamp-workflow-agent_${VAMP_WORKFLOW_VERSION}_linux_amd64.tar.gz
-
-ENTRYPOINT ["/usr/local/vamp/vamp-workflow-agent"]
+ENTRYPOINT ["/usr/local/vamp/vamp-workflow-agent.sh"]
