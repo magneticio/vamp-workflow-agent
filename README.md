@@ -1,8 +1,9 @@
 # Vamp Workflow Agent
 
+[![Join the chat at https://gitter.im/magneticio/vamp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/magneticio/vamp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Docker](https://img.shields.io/badge/docker-images-blue.svg)](https://img.shields.io/badge/docker-images-blue.svg)
 [![Build Status](https://travis-ci.org/magneticio/vamp-workflow-agent.svg?branch=master)](https://travis-ci.org/magneticio/vamp-workflow-agent)
 [![Download](https://api.bintray.com/packages/magnetic-io/downloads/vamp-workflow-agent/images/download.svg) ](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent/_latestVersion)
-[![Join the chat at https://gitter.im/magneticio/vamp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/magneticio/vamp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 - retrieves a workflow JavaScript file using [confd](https://github.com/kelseyhightower/confd)
 - launches Node.js runtime to execute the script
@@ -75,15 +76,13 @@ Important environment variables:
 - `VAMP_WORKFLOW_EXECUTION_PERIOD <=> $executionPeriod`
 - `VAMP_WORKFLOW_EXECUTION_TIMEOUT <=> $executionTimeout`
 
-- [vamp-node-client](https://github.com/magneticio/vamp-node-client)
+Vamp JavaScript API [vamp-node-client](https://github.com/magneticio/vamp-node-client)
 
 More details: [package.json](https://github.com/magneticio/vamp-workflow-agent/blob/master/package.json)
 
 ## Docker Images
 
 Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/).
-
-[![](https://badge.imagelayers.io/magneticio/vamp-workflow-agent:katana.svg)](https://imagelayers.io/?images=magneticio/vamp-workflow-agent:katana)
 
 Example:
 
