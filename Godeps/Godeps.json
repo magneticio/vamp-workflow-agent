@@ -1,10 +1,10 @@
 {
 	"ImportPath": "github.com/magneticio/vamp-workflow-agent",
-	"GoVersion": "go1.7.3",
+	"GoVersion": "go1.7.4",
 	"Deps": [
 		{
 			"ImportPath": "github.com/op/go-logging",
-			"Rev": "dfaf3dff9b631bc4236201d90d41ee0de9202889"
+			"Rev": "970db520ece77730c7e4724c61121037378659d9"
 		}
 	]
 }
