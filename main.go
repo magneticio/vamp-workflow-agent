@@ -7,7 +7,6 @@ import (
 )
 
 var (
-    version string
     workflow = flag.String("workflow", "/usr/local/vamp/workflow.js", "Path to workflow file.")
     executionPeriod = flag.Int("executionPeriod", -1, "Period between successive executions in seconds (0 if disabled).")
     executionTimeout = flag.Int("executionTimeout", -1, "Maximum allowed execution time in seconds (0 if no timeout).")

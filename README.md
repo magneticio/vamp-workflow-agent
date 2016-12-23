@@ -1,9 +1,11 @@
 # Vamp Workflow Agent
 
-Vamp Workflow Agent reads workflow JavaScript file from key-value store [ZooKeeper](https://zookeeper.apache.org/), [etcd](https://coreos.com/etcd/docs/latest/) or [Consul](https://consul.io/) and launches Node.js runtime to execute the file.
-
 [![Build Status](https://travis-ci.org/magneticio/vamp-workflow-agent.svg?branch=master)](https://travis-ci.org/magneticio/vamp-workflow-agent)
-[ ![Download](https://api.bintray.com/packages/magnetic-io/downloads/vamp-workflow-agent/images/download.svg) ](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent/_latestVersion)
+[![Download](https://api.bintray.com/packages/magnetic-io/downloads/vamp-workflow-agent/images/download.svg) ](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent/_latestVersion)
+[![Join the chat at https://gitter.im/magneticio/vamp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/magneticio/vamp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+1) retrieves a workflow JavaScript file using [confd](https://github.com/kelseyhightower/confd)
+2) launches Node.js runtime to execute the script
 
 ## Usage
 
@@ -13,16 +15,8 @@ $ ./vamp-workflow-agent -help
 Usage of ./vamp-workflow-agent:
   -help
         Print usage.
-  -logo
-        Show logo. (default true)
-  -storePath string
-        Scheduled workflow key-value store root path.
-  -storeConnection string
-        Key-value store connection string.
-  -storeType string
-        zookeeper, consul or etcd.
-  -filePath string
-        Path to workflow files. (default "/usr/local/vamp/workflow")
+  -workflow string
+        Path to workflow file. (default "/usr/local/vamp/workflow.js")
   -executionPeriod int
         Period between successive executions in seconds (0 if disabled).
   -executionTimeout int
@@ -69,17 +63,15 @@ Usage of ./build.sh:
 
 Vamp Workflow Agent:
 
-- retrieves workflow script file from: `$storePath`
-- saves it as `workflow.js` in directory `$filePath`
-- sets environment variables
-- executes `node $filePath/workflow.js`
+- retrieves workflow script
+- saves it as `/usr/local/vamp/workflow.js`
+- executes `node /usr/local/vamp/workflow.js`
 
-Using environment variables:
+Important environment variables:
 
-- `VAMP_KEY_VALUE_STORE_TYPE <=> $storeType`
-- `VAMP_KEY_VALUE_STORE_CONNECTION <=> $storeConnection`
-- `VAMP_KEY_VALUE_STORE_PATH <=> $storePath`
-- `VAMP_WORKFLOW_DIRECTORY <=> $filePath`
+- `VAMP_KEY_VALUE_STORE_TYPE <=> confd -backend`
+- `VAMP_KEY_VALUE_STORE_CONNECTION <=> confd -node`
+- `VAMP_KEY_VALUE_STORE_PATH <=> key used by confd`
 - `VAMP_WORKFLOW_EXECUTION_PERIOD <=> $executionPeriod`
 - `VAMP_WORKFLOW_EXECUTION_TIMEOUT <=> $executionTimeout`
 
@@ -96,12 +88,12 @@ Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/).
 Example:
 
 ```
-docker run magneticio/vamp-workflow-agent:katana \
-           -storeType=zookeeper \
-           -storeConnection=localhost:2181 \
-           -executionPeriod=0 \
-           -executionTimeout=10 \
-           -storePath=/scripts
+docker run -e VAMP_KEY_VALUE_STORE_TYPE=zookeeper \
+           -e VAMP_KEY_VALUE_STORE_CONNECTION=localhost:2181 \
+           -e VAMP_KEY_VALUE_STORE_PATH=/scripts \
+           -e VAMP_WORKFLOW_EXECUTION_PERIOD=0 \
+           -e VAMP_WORKFLOW_EXECUTION_TIMEOUT=10 \
+           magneticio/vamp-workflow-agent:katana
 ```
 
-In this example JavaScript is read from `/scripts` key.
+In this example JavaScript is read from `/scripts` entry.
