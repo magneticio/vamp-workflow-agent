@@ -4,8 +4,8 @@
 [![Download](https://api.bintray.com/packages/magnetic-io/downloads/vamp-workflow-agent/images/download.svg) ](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent/_latestVersion)
 [![Join the chat at https://gitter.im/magneticio/vamp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/magneticio/vamp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-1) retrieves a workflow JavaScript file using [confd](https://github.com/kelseyhightower/confd)
-2) launches Node.js runtime to execute the script
+- retrieves a workflow JavaScript file using [confd](https://github.com/kelseyhightower/confd)
+- launches Node.js runtime to execute the script
 
 ## Usage
 
