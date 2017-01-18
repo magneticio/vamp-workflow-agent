@@ -80,8 +80,8 @@ func executeWorkflowScript(workflowFile string) {
             }
         }
         elapsed := time.Since(start)
-        logger.Notice("Workflow execution took: %s", elapsed)
-        logger.Notice("Workflow exit status code: %d", exitStatusCode)
+        logger.Notice("Workflow execution took: ", elapsed)
+        logger.Notice("Workflow exit status code: ", exitStatusCode)
     }
 
     if *executionTimeout == 0 {

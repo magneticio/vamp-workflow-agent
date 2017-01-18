@@ -28,9 +28,9 @@ func main() {
 
     logger.Notice("Starting Vamp Workflow Agent")
 
-    logger.Info("Workflow file path            : %s", *workflow)
-    logger.Info("Workflow execution period     : %d", *executionPeriod)
-    logger.Info("Workflow execution timeout    : %d", *executionTimeout)
+    logger.Info("Workflow file path            : ", *workflow)
+    logger.Info("Workflow execution period     : ", *executionPeriod)
+    logger.Info("Workflow execution timeout    : ", *executionTimeout)
 
     run(*workflow)
 }
