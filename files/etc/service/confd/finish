@@ -1,0 +1,8 @@
+#! /bin/bash
+
+[[ -e /usr/local/vamp/good2go ]] && exit 0
+
+: "${VAMP_WORKFLOW_AGENT_CONFD_INTERVAL:=5}"
+
+sleep $VAMP_WORKFLOW_AGENT_CONFD_INTERVAL
+exit 0

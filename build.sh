@@ -123,6 +123,7 @@ function npm_make {
 function docker_make {
     cp ${dir}/Dockerfile ${dir}/${target_docker}/Dockerfile
     cp ${dir}/vamp-workflow-agent.sh ${dir}/${target_vamp}/vamp-workflow-agent.sh
+    cp -Rf ${dir}/files ${dir}/${target_docker}
 }
 
 function docker_build {

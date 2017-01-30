@@ -1,0 +1,56 @@
+#! /bin/bash
+
+handle() { echo "vamp-workflow-agent/run: got signal"; exit; }
+trap handle SIGINT
+
+[[ -e /usr/local/vamp/good2go ]] && exit 0
+
+: "${VAMP_WORKFLOW_AGENT_LOGO:=TRUE}"
+
+if [ "$VAMP_WORKFLOW_AGENT_LOGO" = "TRUE" ] || [ "$VAMP_WORKFLOW_AGENT_LOGO" = "1" ]; then
+echo "
+██╗   ██╗ █████╗ ███╗   ███╗██████╗     ██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗███████╗██╗      ██████╗ ██╗    ██╗
+██║   ██║██╔══██╗████╗ ████║██╔══██╗    ██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝██╔════╝██║     ██╔═══██╗██║    ██║
+██║   ██║███████║██╔████╔██║██████╔╝    ██║ █╗ ██║██║   ██║██████╔╝█████╔╝ █████╗  ██║     ██║   ██║██║ █╗ ██║
+╚██╗ ██╔╝██╔══██║██║╚██╔╝██║██╔═══╝     ██║███╗██║██║   ██║██╔══██╗██╔═██╗ ██╔══╝  ██║     ██║   ██║██║███╗██║
+ ╚████╔╝ ██║  ██║██║ ╚═╝ ██║██║         ╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗██║     ███████╗╚██████╔╝╚███╔███╔╝
+  ╚═══╝  ╚═╝  ╚═╝╚═╝     ╚═╝╚═╝          ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝ ╚═════╝  ╚══╝╚══╝
+"
+fi
+
+: "${VAMP_KEY_VALUE_STORE_PATH?not provided.}"
+: "${VAMP_KEY_VALUE_STORE_TYPE?not provided.}"
+: "${VAMP_KEY_VALUE_STORE_CONNECTION?not provided.}"
+
+echo "VAMP_KEY_VALUE_STORE_TYPE       : ${VAMP_KEY_VALUE_STORE_TYPE}"
+echo "VAMP_KEY_VALUE_STORE_CONNECTION : ${VAMP_KEY_VALUE_STORE_CONNECTION}"
+echo "VAMP_KEY_VALUE_STORE_PATH       : ${VAMP_KEY_VALUE_STORE_PATH}"
+
+printf "node  " && node --version
+printf "npm   " && npm --version
+/usr/bin/confd -version
+
+mkdir -p /usr/local/vamp/confd/conf.d
+mkdir -p /usr/local/vamp/confd/templates
+
+echo "creating confd configuration and template"
+cat <<EOT > /usr/local/vamp/confd/conf.d/workflow.toml
+[template]
+src = "workflow.tmpl"
+dest = "/usr/local/vamp/workflow.js"
+keys = [ "${VAMP_KEY_VALUE_STORE_PATH}" ]
+EOT
+cat <<EOT > /usr/local/vamp/confd/templates/workflow.tmpl
+{{getv "${VAMP_KEY_VALUE_STORE_PATH}"}}
+EOT
+
+/usr/bin/confd \
+       -onetime=true \
+       -backend ${VAMP_KEY_VALUE_STORE_TYPE} \
+       -node ${VAMP_KEY_VALUE_STORE_CONNECTION} \
+       -log-level=warn \
+       -confdir /usr/local/vamp/confd || exit 1
+
+touch /usr/local/vamp/good2go
+
+exec /usr/local/vamp/vamp-workflow-agent --workflow="/usr/local/vamp/workflow.js"
