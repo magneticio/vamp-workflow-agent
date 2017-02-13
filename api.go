@@ -31,6 +31,7 @@ type ExecutionFinish struct {
 }
 
 type ExecutionLog struct {
+    Timestamp time.Time `json:"timestamp"`
     Execution int `json:"execution"`
     Log       ExecutionLogMessage `json:"log"`
 }
@@ -63,5 +64,5 @@ func (api *Api) FinalizeExecution(exe *Execution, status int) {
 func (api *Api) ExecutionLog(exe *Execution, log string, error bool) {
     message := ExecutionLogMessage{len((*exe).Log), log, error}
     (*exe).Log = append((*exe).Log, message)
-    api.stream <- ExecutionLog{(*exe).Id, message}
+    api.stream <- ExecutionLog{time.Now(), (*exe).Id, message}
 }

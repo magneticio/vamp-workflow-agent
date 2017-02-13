@@ -1,0 +1,76 @@
+<div [ngSwitch]="execution">
+
+  <div *ngSwitchCase="null">
+    <md-list-item *ngFor="let execution of executions">
+      <md-card class="app-card">
+        <md-grid-list cols="4" rowHeight="fit" class="app-execution">
+          <md-grid-tile>
+            <md-chip-list>
+              <md-chip>#{{execution.id}}</md-chip>
+            </md-chip-list>
+          </md-grid-tile>
+          <md-grid-tile>
+            <md-list dense>
+              <md-list-item>{{ execution.start | date:'HH:mm:ss' }}</md-list-item>
+              <md-list-item>{{ execution.elapsed >= 0 ? execution.elapsed + ' ms' : ''}}</md-list-item>
+            </md-list>
+          </md-grid-tile>
+          <md-grid-tile>
+            <md-chip-list [ngSwitch]="execution.status">
+              <md-spinner *ngSwitchCase="null" class="app-spinner"></md-spinner>
+              <p *ngSwitchCase="0">OK</p>
+              <md-chip *ngSwitchDefault color="primary" selected="true">ERROR</md-chip>
+            </md-chip-list>
+          </md-grid-tile>
+          <md-grid-tile>
+            <button md-raised-button color="accent" (click)="show(execution)">LOG</button>
+          </md-grid-tile>
+        </md-grid-list>
+      </md-card>
+    </md-list-item>
+  </div>
+
+  <div *ngSwitchDefault>
+    <md-card class="app-card">
+      <md-grid-list cols="4" rowHeight="fit" class="app-execution">
+        <md-grid-tile>
+          <md-chip-list>
+            <md-chip>#{{execution.id}}</md-chip>
+          </md-chip-list>
+        </md-grid-tile>
+        <md-grid-tile>
+          <md-list dense>
+            <md-list-item>{{ execution.start | date:'HH:mm:ss' }}</md-list-item>
+            <md-list-item>{{ execution.elapsed >= 0 ? execution.elapsed + ' ms' : ''}}</md-list-item>
+          </md-list>
+        </md-grid-tile>
+        <md-grid-tile>
+          <md-chip-list [ngSwitch]="execution.status">
+            <md-spinner *ngSwitchCase="null" class="app-spinner"></md-spinner>
+            <p *ngSwitchCase="0">OK</p>
+            <md-chip *ngSwitchDefault color="primary" selected="true">ERROR</md-chip>
+          </md-chip-list>
+        </md-grid-tile>
+        <md-grid-tile>
+          <button md-raised-button color="primary" (click)="show(null)">BACK</button>
+        </md-grid-tile>
+      </md-grid-list>
+    </md-card>
+
+    <div class="app-log">
+      <md-card *ngFor="let log of execution.log" class="app-card">
+        <md-chip-list>
+          <md-chip>{{ log.timestamp | date:'HH:mm:ss' }}</md-chip>
+          <md-chip *ngIf="log.error" color="primary" selected="true">ERROR</md-chip>
+          <md-chip  *ngIf="log.tag">{{ log.tag }}</md-chip>
+        </md-chip-list>
+        <p>{{ log.message }}</p>
+      </md-card>
+    </div>
+  </div>
+
+</div>
+
+
+
+

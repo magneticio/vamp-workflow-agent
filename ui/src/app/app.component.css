@@ -1,0 +1,28 @@
+.app-content {
+}
+
+.app-log {
+  word-wrap: break-word;
+}
+
+.app-card {
+  padding: 15px;
+}
+
+.app-execution {
+  height: 64px;
+}
+
+.app-spinner {
+  height: 30px;
+  width: 30px;
+  display: inline-block;
+}
+
+.app-action {
+  display: inline-block;
+  color: black;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
