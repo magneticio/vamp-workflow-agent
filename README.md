@@ -75,6 +75,7 @@ Important environment variables:
 - `VAMP_KEY_VALUE_STORE_PATH <=> key used by confd`
 - `VAMP_WORKFLOW_EXECUTION_PERIOD <=> $executionPeriod`
 - `VAMP_WORKFLOW_EXECUTION_TIMEOUT <=> $executionTimeout`
+- `VAMP_ELASTICSEARCH_URL <=> http://elasticsearch:9200`
 
 Vamp JavaScript API [vamp-node-client](https://github.com/magneticio/vamp-node-client)
 
@@ -92,6 +93,7 @@ docker run -e VAMP_KEY_VALUE_STORE_TYPE=zookeeper \
            -e VAMP_KEY_VALUE_STORE_PATH=/scripts \
            -e VAMP_WORKFLOW_EXECUTION_PERIOD=0 \
            -e VAMP_WORKFLOW_EXECUTION_TIMEOUT=10 \
+           -e VAMP_ELASTICSEARCH_URL=http://localhost:9200 \
            magneticio/vamp-workflow-agent:katana
 ```
 
