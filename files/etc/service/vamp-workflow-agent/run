@@ -87,4 +87,5 @@ EOT
 
 touch /usr/local/vamp/good2go
 
+exec 2>&1
 exec /usr/local/vamp/vamp-workflow-agent --workflow="/usr/local/vamp/workflow.js"

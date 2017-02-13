@@ -13,6 +13,7 @@ for dependency in /usr/local/vamp/confd/conf.d/workflow.toml /usr/local/vamp/con
   fi
 done
 
+exec 2>&1
 exec /usr/bin/confd \
        -onetime=true \
        -backend ${VAMP_KEY_VALUE_STORE_TYPE} \
