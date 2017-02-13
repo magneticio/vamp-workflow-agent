@@ -20,8 +20,9 @@ RUN set -xe \
     && curl --location --silent --show-error --output /usr/bin/confd $CONFD_URL \
     && chmod 0755 /usr/bin/confd \
     \
+    && mkdir -p /usr/local/metricbeat/ \
     && curl --location --silent --show-error $METRICBEAT_URL --output - | tar zxf - -C /tmp \
-    && mv /tmp/metricbeat-${METRICBEAT_VER}-linux-x86_64/metricbeat /usr/local/bin/ \
+    && mv /tmp/metricbeat-${METRICBEAT_VER}-linux-x86_64/metricbeat /usr/local/metricbeat/ \
     && rm -rf /tmp/metricbeat-${METRICBEAT_VER}-linux-x86_64
 
 RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" && \
