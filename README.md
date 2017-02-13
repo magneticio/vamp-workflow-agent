@@ -36,8 +36,6 @@ Using the `build.sh` script:
 
 Alternatively:
 
-- `go get github.com/tools/godep`
-- `godep restore`
 - `go install`
 - `CGO_ENABLED=0 go build -v -a -installsuffix cgo`
 

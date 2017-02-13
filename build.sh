@@ -72,8 +72,6 @@ function build_help() {
 function go_make() {
     cd ${dir}
 
-    go get github.com/tools/godep
-    godep restore
     go install
 
     for goos in darwin linux windows; do

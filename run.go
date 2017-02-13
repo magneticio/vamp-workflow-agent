@@ -10,10 +10,10 @@ import (
     "time"
 )
 
-func run(workflowFile string) {
+func run(api *Api, workflowFile string) {
 
     if *executionPeriod == 0 {
-        executeWorkflowScript(workflowFile)
+        executeWorkflowScript(api, workflowFile)
         return
     }
 
@@ -27,7 +27,7 @@ func run(workflowFile string) {
             running = false
         }()
         running = true
-        executeWorkflowScript(workflowFile)
+        executeWorkflowScript(api, workflowFile)
     }
 
     go execute()
@@ -46,9 +46,10 @@ func run(workflowFile string) {
     }
 }
 
-func executeWorkflowScript(workflowFile string) {
-    logger.Notice("Executing workflow by Node.js.")
-    start := time.Now()
+func executeWorkflowScript(api *Api, workflowFile string) {
+    log.Println("Executing workflow by Node.js.")
+
+    exe := api.CreateExecution()
     cmd := exec.Command("node", workflowFile)
 
     stdout, err := cmd.StdoutPipe()
@@ -66,22 +67,22 @@ func executeWorkflowScript(workflowFile string) {
         log.Fatal(err)
     }
 
-    go processOutput(stdout, false)
-    go processOutput(stderr, true)
+    go processOutput(api, &exe, stdout, false)
+    go processOutput(api, &exe, stderr, true)
 
     finished := func(err error) {
         exitStatusCode := 0
         if err != nil {
-            logger.Error("Error during execution of the workflow script.")
+            log.Println("Error during execution of the workflow script.")
             if exitError, ok := err.(*exec.ExitError); ok {
                 if status, ok := exitError.Sys().(syscall.WaitStatus); ok {
                     exitStatusCode = status.ExitStatus()
                 }
             }
         }
-        elapsed := time.Since(start)
-        logger.Notice("Workflow execution took: ", elapsed)
-        logger.Notice("Workflow exit status code: ", exitStatusCode)
+        api.FinalizeExecution(&exe, exitStatusCode)
+        log.Println("Workflow execution took  :", exe.Finish.Sub(exe.Start))
+        log.Println("Workflow exit status code:", exe.Status)
     }
 
     if *executionTimeout == 0 {
@@ -96,26 +97,28 @@ func executeWorkflowScript(workflowFile string) {
     select {
     case <-time.After(time.Duration(*executionTimeout) * time.Second):
         if err := cmd.Process.Kill(); err != nil {
-            logger.Error("Failed to kill the workflow process: ", err)
+            log.Println("ERROR - failed to kill the workflow process:", err)
         }
-        logger.Notice("Workflow process is killed as timeout reached.")
+        log.Println("Workflow process is killed as timeout reached.")
     case err := <-done:
         finished(err)
     }
 }
 
-func processOutput(rd io.Reader, error bool) {
+func processOutput(api *Api, exe *Execution, rd io.Reader, error bool) {
     reader := bufio.NewReader(rd)
     for {
         input, err := reader.ReadString('\n')
         if err != nil || err == io.EOF {
             break
         }
-        message := "WORKFLOW " + strings.TrimSuffix(input, "\n")
+        workflowLog := strings.TrimSuffix(input, "\n")
+        api.ExecutionLog(exe, workflowLog, error)
+        message := "WORKFLOW - " + workflowLog
         if error {
-            logger.Error(message);
+            log.Println("ERROR - ", message);
         } else {
-            logger.Info(message);
+            log.Println(message);
         }
     }
 }
