@@ -77,7 +77,7 @@ func websocketServe(api *Api) {
             make(chan bool),
         }
         server.addClient <- client
-        client.Listen()
+        client.Listen(api)
     }
 
     pattern := "/websocket"
@@ -97,16 +97,7 @@ func websocketServe(api *Api) {
             delete(server.clients, client.id)
 
         case message := <-server.api.stream:
-            switch t := message.(type) {
-            default:
-                log.Printf("Unexpected API message type %T", t)
-            case ExecutionStart:
-                server.broadcast(WebSocketMessage{"execution-start", message })
-            case ExecutionFinish:
-                server.broadcast(WebSocketMessage{"execution-finish", message })
-            case ExecutionLog:
-                server.broadcast(WebSocketMessage{"execution-log", message })
-            }
+            server.broadcast(toWebSocketMessage(message))
 
         case err := <-server.error:
             log.Println("Error:", err.Error())
@@ -117,21 +108,22 @@ func websocketServe(api *Api) {
     }
 }
 
-func (server *WebSocketServer) broadcast(message WebSocketMessage) {
-    for _, client := range server.clients {
-        client.Write(&message)
+func (server *WebSocketServer) broadcast(message *WebSocketMessage) {
+    if message != nil {
+        for _, client := range server.clients {
+            client.Write(message)
+        }
     }
 }
 
-func (client *WebSocketClient) Listen() {
+func (client *WebSocketClient) Listen(api *Api) {
     go client.listenWrite()
-    client.listenRead()
+    client.listenRead(api)
 }
 
 func (client *WebSocketClient) listenWrite() {
     for {
         select {
-
         case message := <-client.messages:
             websocket.JSON.Send(client.connection, message)
 
@@ -143,7 +135,7 @@ func (client *WebSocketClient) listenWrite() {
     }
 }
 
-func (client *WebSocketClient) listenRead() {
+func (client *WebSocketClient) listenRead(api *Api) {
     for {
         select {
 
@@ -160,18 +152,41 @@ func (client *WebSocketClient) listenRead() {
             } else if err != nil {
                 client.server.error <- err
             } else {
-                log.Println("[", client.id, "] ===>", message.Command)
+                log.Println("Command [", client.id, "]", message.Command)
+                api.Command(message.Command, client)
             }
         }
     }
 }
 
 func (client *WebSocketClient) Write(message *WebSocketMessage) {
-    select {
-    case client.messages <- message:
+    if message != nil {
+        select {
+        case client.messages <- message:
+        default:
+            client.server.removeClient <- client
+            err := fmt.Errorf("Client %d is already disconnected.", client.id)
+            client.server.error <- err
+        }
+    }
+}
+
+func (client *WebSocketClient) Reply(message interface{}) {
+    client.Write(toWebSocketMessage(message))
+}
+
+func toWebSocketMessage(message interface{}) *WebSocketMessage {
+    switch t := message.(type) {
     default:
-        client.server.removeClient <- client
-        err := fmt.Errorf("Client %d is already disconnected.", client.id)
-        client.server.error <- err
+        log.Printf("Unexpected message type %T", t)
+        return nil
+    case Execution:
+        return &WebSocketMessage{"execution", message }
+    case ExecutionStart:
+        return &WebSocketMessage{"execution-start", message }
+    case ExecutionFinish:
+        return &WebSocketMessage{"execution-finish", message }
+    case ExecutionLog:
+        return &WebSocketMessage{"execution-log", message }
     }
 }

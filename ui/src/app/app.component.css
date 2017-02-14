@@ -1,6 +1,10 @@
 .app-content {
 }
 
+.app-toolbar-filler {
+  flex: 1 1 auto;
+}
+
 .app-log {
   word-wrap: break-word;
 }

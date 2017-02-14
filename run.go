@@ -67,8 +67,8 @@ func executeWorkflowScript(api *Api, workflowFile string) {
         log.Fatal(err)
     }
 
-    go processOutput(api, &exe, stdout, false)
-    go processOutput(api, &exe, stderr, true)
+    go processOutput(api, exe, stdout, false)
+    go processOutput(api, exe, stderr, true)
 
     finished := func(err error) {
         exitStatusCode := 0
@@ -80,7 +80,7 @@ func executeWorkflowScript(api *Api, workflowFile string) {
                 }
             }
         }
-        api.FinalizeExecution(&exe, exitStatusCode)
+        api.FinalizeExecution(exe, exitStatusCode)
         log.Println("Workflow execution took  :", exe.Finish.Sub(exe.Start))
         log.Println("Workflow exit status code:", exe.Status)
     }

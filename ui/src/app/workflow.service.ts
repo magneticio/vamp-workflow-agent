@@ -19,7 +19,9 @@ export class WorkflowService {
     this.websocket.getDataStream().subscribe((message: MessageEvent) => {
       this.process(JSON.parse(message.data));
     });
-    this.command({command: 'history'});
+    this.websocket.onOpen(() => {
+      this.command({command: 'execution-history'});
+    });
   }
 
   private command(cmd: WorkflowCommand) {
@@ -27,9 +29,7 @@ export class WorkflowService {
   }
 
   private process(message: any) {
-    if (message.type == 'execution-start' || message.type == 'execution-finish' || message.type == 'execution-log') {
-      this.events.emit(message);
-    }
+    this.events.emit(message);
   }
 
   private static url() {
