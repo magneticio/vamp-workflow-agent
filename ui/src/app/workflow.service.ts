@@ -11,8 +11,8 @@ export class WorkflowService {
   constructor() {
     this.events = new EventEmitter();
     this.websocket = new $WebSocket(WorkflowService.url(), null, {
-      initialTimeout: 100,
-      maxTimeout: 3000,
+      initialTimeout: 1000,
+      maxTimeout: 3600000,
       reconnectIfNotNormalClose: true
     });
     this.websocket.getDataStream().subscribe((message: MessageEvent) => {
