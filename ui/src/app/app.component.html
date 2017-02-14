@@ -1,9 +1,11 @@
-<div [ngSwitch]="execution">
+<div [ngSwitch]="executionDetails">
 
   <div *ngSwitchCase="null">
 
     <md-toolbar color="primary">
-      Executions
+      EXECUTIONS
+      <span class="app-toolbar-filler"></span>
+      <md-slide-toggle [checked]="false" (change)="change($event)">FAILED ONLY</md-slide-toggle>
     </md-toolbar>
 
     <md-list-item *ngFor="let execution of executions">
@@ -39,13 +41,13 @@
   <div *ngSwitchDefault>
 
     <md-toolbar color="primary">
-      #{{execution.id}} Execution Log
+      #{{executionDetails.id}} EXECUTION LOG
       <span class="app-toolbar-filler"></span>
       <button md-raised-button color="accent" (click)="show(null)">LIST</button>
     </md-toolbar>
 
     <div class="app-log">
-      <md-card *ngFor="let log of execution.log" class="app-card">
+      <md-card *ngFor="let log of executionDetails.log" class="app-card">
         <md-chip-list>
           <md-chip>{{ log.timestamp | date:'HH:mm:ss' }}</md-chip>
           <md-chip *ngIf="log.error" color="primary" selected="true">ERROR</md-chip>

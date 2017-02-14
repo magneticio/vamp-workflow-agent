@@ -6,7 +6,6 @@ import {$WebSocket, WebSocketSendMode} from './websocket.service';
 export class WorkflowService {
 
   private websocket;
-
   public events: EventEmitter<WorkflowEvent>;
 
   constructor() {
@@ -24,7 +23,7 @@ export class WorkflowService {
     });
   }
 
-  private command(cmd: WorkflowCommand) {
+  public command(cmd: WorkflowCommand) {
     this.websocket.send(JSON.stringify(cmd), WebSocketSendMode.Direct);
   }
 

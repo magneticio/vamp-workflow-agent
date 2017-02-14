@@ -39,6 +39,7 @@ type ExecutionLog struct {
 
 var executionId int = 0
 var executions = ring.New(16)
+var failedExecutions = ring.New(16)
 
 type Api struct {
     stream chan interface{}
@@ -67,6 +68,11 @@ func (api *Api) FinalizeExecution(exe *Execution, status int) {
 
     executions = executions.Next()
 
+    if status > 0 {
+        failedExecutions.Value = exe
+        failedExecutions = failedExecutions.Next()
+    }
+
     log.Print("Finalized execution:", exe.Id)
     api.stream <- ExecutionFinish{exe.Id, exe.Finish, exe.Status}
 }
@@ -80,6 +86,11 @@ func (api *Api) ExecutionLog(exe *Execution, log string, error bool) {
 func (api *Api) Command(command string, replyTo ApiReply) {
     if command == "execution-history" {
         executions.Do(func(execution interface{}) {
+            if execution != nil {
+                replyTo.Reply(*execution.(*Execution))
+            }
+        })
+        failedExecutions.Do(func(execution interface{}) {
             if execution != nil {
                 replyTo.Reply(*execution.(*Execution))
             }

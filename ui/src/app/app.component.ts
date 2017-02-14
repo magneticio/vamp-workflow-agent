@@ -9,8 +9,13 @@ import {WorkflowService} from './workflow.service';
 })
 export class AppComponent {
   maxLength = 8;
-  execution = null;
+  failedOnly = false;
+  executionDetails = null;
+
+  last = null;
   executions: Execution[] = [];
+
+  private workflowService: WorkflowService;
 
   static newExecution(payload: any): Execution {
     let execution = new Execution(payload.id, payload.start);
@@ -35,8 +40,9 @@ export class AppComponent {
     )
   }
 
-  constructor(private workflow: WorkflowService) {
-    workflow.events.subscribe(event => {
+  constructor(private ws: WorkflowService) {
+    this.workflowService = ws;
+    this.workflowService.events.subscribe(event => {
       if (event.type == 'execution-start') {
         this.addExecution(AppComponent.newExecution(event.payload));
       } else if (event.type == 'execution-finish') {
@@ -49,11 +55,27 @@ export class AppComponent {
     });
   }
 
+  public change(event) {
+    this.failedOnly = event.checked;
+    if (this.failedOnly) {
+      for (let index = this.executions.length - 1; index >= 0; index--) {
+        if (this.executions[index].status == null || this.executions[index].status == 0) {
+          this.executions.splice(index, 1);
+        }
+      }
+    }
+    this.workflowService.command({command: 'execution-history'});
+  }
+
   public show(execution: Execution) {
-    this.execution = execution;
+    this.executionDetails = execution;
   }
 
   private addExecution(execution: Execution) {
+    this.last = execution;
+    if (this.failedOnly && (execution.status == null || execution.status == 0)) {
+      return;
+    }
     let index = 0;
     while (index < this.executions.length && this.executions[index].id > execution.id) index++;
     if (index >= this.executions.length || this.executions[index].id != execution.id) {
@@ -63,22 +85,35 @@ export class AppComponent {
   }
 
   private finishExecution(execution: Execution) {
+    let found = null;
     for (let index = 0; index < this.executions.length; index++) {
       if (this.executions[index].id == execution.id) {
-        this.executions[index].finish = execution.finish;
-        this.executions[index].status = execution.status;
-        this.executions[index].calculate();
-        return;
+        found = this.executions[index];
+        break;
       }
+    }
+    if (this.failedOnly && found == null && this.last != null && execution.id == this.last.id && execution.status > 0) {
+      this.last.finish = execution.finish;
+      this.last.status = execution.status;
+      this.last.calculate();
+      this.addExecution(this.last);
+    } else if (found) {
+      found.finish = execution.finish;
+      found.status = execution.status;
+      found.calculate();
     }
   }
 
   private executionLog(id: number, log: ExecutionLog) {
+    let found = null;
     for (let index = 0; index < this.executions.length; index++) {
       if (this.executions[index].id == id) {
-        this.executions[index].log.push(log);
-        return;
+        found = this.executions[index];
+        break;
       }
+    }
+    if (found) {
+      found.log.push(log);
     }
   }
 }
