@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -o errexit
+
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 reset=`tput sgr0`
@@ -12,7 +14,10 @@ else
     version="katana"
 fi
 
+ui_dir=${dir}'/ui'
+
 target='target'
+target_ui=${ui_dir}'/dist'
 target_vamp=${target}'/vamp'
 target_docker=${target}'/docker'
 project="vamp-workflow-agent"
@@ -110,6 +115,11 @@ function go_make() {
     done
 }
 
+function docker_make {
+    cp ${dir}/Dockerfile ${dir}/${target_docker}/Dockerfile
+    cp -Rf ${dir}/files ${dir}/${target_docker}
+}
+
 function npm_make {
     cd ${target_vamp}
     echo "${green}npm version: $( npm --version )${reset}"
@@ -118,9 +128,12 @@ function npm_make {
     removeNPMAbsolutePaths $(pwd)
 }
 
-function docker_make {
-    cp ${dir}/Dockerfile ${dir}/${target_docker}/Dockerfile
-    cp -Rf ${dir}/files ${dir}/${target_docker}
+function ui_make {
+    cd ${ui_dir}
+    rm -Rf ${ui_dir}'/node_modules' 2> /dev/null
+    npm install
+    ng build --env=prod
+    mv ${target_ui} ${dir}/${target_vamp}/ui
 }
 
 function docker_build {
@@ -149,6 +162,7 @@ function process() {
     if [ ${flag_make} -eq 1 ]; then
         docker_make
         npm_make
+        ui_make
         go_make
     fi
 

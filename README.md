@@ -7,6 +7,7 @@
 
 - retrieves a workflow JavaScript file using [confd](https://github.com/kelseyhightower/confd)
 - launches Node.js runtime to execute the script
+- gives an overview (UI) of script execution
 
 ## Usage
 
@@ -16,6 +17,10 @@ $ ./vamp-workflow-agent -help
 Usage of ./vamp-workflow-agent:
   -help
         Print usage.
+  -httpPort int
+        HTTP port. (default 8080)
+  -uiPath string
+        Path to UI static content. (default "./ui/")
   -workflow string
         Path to workflow file. (default "/usr/local/vamp/workflow.js")
   -executionPeriod int
