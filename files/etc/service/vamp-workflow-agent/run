@@ -64,8 +64,9 @@ metricbeat.modules:
     - network     # Network stats
     - process     # Per process stats
   enabled: true
-  period: 10s
+  period: 1s
   processes: ['.*']
+  tags: ["workflow","${VAMP_KEY_VALUE_STORE_PATH##*/}"]
 
 output.elasticsearch:
   hosts: ["$VAMP_ELASTICSEARCH_URL"]
