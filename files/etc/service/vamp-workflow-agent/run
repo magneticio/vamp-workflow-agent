@@ -87,5 +87,12 @@ EOT
 
 touch /usr/local/vamp/good2go
 
+: "${VAMP_WORKFLOW_PATH:="/usr/local/vamp/workflow.js"}"
+: "${VAMP_WORKFLOW_HTTP_PORT:=8080}"
+: "${VAMP_WORKFLOW_UI_PATH:="./ui/"}"
+
 exec 2>&1
-exec /usr/local/vamp/vamp-workflow-agent --workflow="/usr/local/vamp/workflow.js"
+exec /usr/local/vamp/vamp-workflow-agent \
+        --workflow="$VAMP_WORKFLOW_PATH" \
+        --httpPort="$VAMP_WORKFLOW_HTTP_PORT" \
+        --uiPath="$VAMP_WORKFLOW_UI_PATH"
