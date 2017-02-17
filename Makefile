@@ -22,6 +22,7 @@ all: default
 default:
 	docker run \
 		--interactive \
+		--tty \
 		--rm \
 		--volume /var/run/docker.sock:/var/run/docker.sock \
 		--volume $(shell command -v docker):/usr/bin/docker \
