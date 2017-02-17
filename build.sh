@@ -77,6 +77,8 @@ function build_help() {
 function go_make() {
     cd ${dir}
 
+    echo "${green}installing Go dependencies${reset}"
+    go get -d ./...
     go install
 
     for goos in darwin linux windows; do
