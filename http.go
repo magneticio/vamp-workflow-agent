@@ -43,7 +43,6 @@ func serve(api *Api, port int, path string) {
 }
 
 func httpServe(port int, path string) {
-    log.Println("Serving static content    :", path)
     http.Handle("/", http.FileServer(http.Dir(path)))
     log.Fatal(http.ListenAndServe(":" + strconv.Itoa(port), nil))
 }

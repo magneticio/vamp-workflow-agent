@@ -5,7 +5,6 @@ trap handle SIGINT
 
 [[ -e /usr/local/vamp/good2go ]] || { sleep 5; exit 1; }
 
-
 for dependency in /usr/local/vamp/confd/conf.d/workflow.toml /usr/local/vamp/confd/templates/workflow.tmpl ; do
   if [[ ! -s $dependency ]] ; then
     >&2 echo "confd/run: error: no such file: $dependency"

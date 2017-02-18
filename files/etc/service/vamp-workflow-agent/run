@@ -90,7 +90,7 @@ touch /usr/local/vamp/good2go
 
 : "${VAMP_WORKFLOW_PATH:="/usr/local/vamp/workflow.js"}"
 : "${VAMP_WORKFLOW_HTTP_PORT:=8080}"
-: "${VAMP_WORKFLOW_UI_PATH:="./ui/"}"
+: "${VAMP_WORKFLOW_UI_PATH:="/usr/local/vamp/ui/"}"
 
 exec 2>&1
 exec /usr/local/vamp/vamp-workflow-agent \
