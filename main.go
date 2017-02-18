@@ -5,6 +5,7 @@ import (
     "log"
     "flag"
     "strconv"
+    "path/filepath"
 )
 
 var (
@@ -26,11 +27,17 @@ func main() {
         return
     }
 
+    uiAbsPath, err := filepath.Abs(*uiPath)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
     checkInt(executionPeriod, "VAMP_WORKFLOW_EXECUTION_PERIOD", "Execution period must be specified and it must be equal or greater than 0.")
     checkInt(executionTimeout, "VAMP_WORKFLOW_EXECUTION_TIMEOUT", "Execution timeout must be specified and it must be equal or greater than 0.")
 
-    log.Print("Starting Vamp Workflow Agent")
-
+    log.Println("HTTP port                 :", *httpPort)
+    log.Println("HTTP static content path  :", uiAbsPath)
     log.Println("Workflow file path        :", *workflow)
     log.Println("Workflow execution period :", *executionPeriod)
     log.Println("Workflow execution timeout:", *executionTimeout)
@@ -38,7 +45,7 @@ func main() {
     api := &Api{make(chan interface{})}
 
     go run(api, *workflow)
-    serve(api, *httpPort, *uiPath)
+    serve(api, *httpPort, uiAbsPath)
 }
 
 func checkInt(argument *int, environmentVariable, panic string) {
