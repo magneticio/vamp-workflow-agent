@@ -40,7 +40,7 @@ metricbeat.modules:
   enabled: true
   period: 1s
   processes: ['.*']
-  tags: ["vamp",workflow","${VAMP_KEY_VALUE_STORE_PATH##*/}"]
+  tags: ["vamp","workflow","${VAMP_KEY_VALUE_STORE_PATH##*/}"]
 
 output.elasticsearch:
   hosts: ["$VAMP_ELASTICSEARCH_URL"]
