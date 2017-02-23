@@ -6,7 +6,7 @@ SHELL             := bash
 .SUFFIXES:
 
 # Constants, these can be overwritten in your Makefile.local
-BUILD_SERVER := magneticio/buildserver:latest
+BUILD_SERVER := magneticio/buildserver
 
 # if Makefile.local exists, include it.
 ifneq ("$(wildcard Makefile.local)", "")
@@ -20,7 +20,9 @@ all: default
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
 default:
+	docker pull $(BUILD_SERVER)
 	docker run \
+		--name buildserver \
 		--interactive \
 		--tty \
 		--rm \
@@ -29,15 +31,4 @@ default:
 		--volume $(CURDIR):/srv/src/go/src/github.com/magneticio/vamp-workflow-agent \
 		--workdir=/srv/src/go/src/github.com/magneticio/vamp-workflow-agent \
 		$(BUILD_SERVER) \
-			make build
-
-
-.PHONY: build
-build:
-	./build.sh --build
-
-
-.PHONY: clean
-clean:
-	./build.sh --remove
-
+			./build.sh --build
