@@ -8,12 +8,14 @@ import (
     "bufio"
     "strings"
     "time"
+    "os"
 )
 
 func run(api *Api, workflowFile string) {
 
     if *executionPeriod == 0 {
-        executeWorkflowScript(api, workflowFile)
+        status := executeWorkflowScript(api, workflowFile)
+        os.Exit(status)
         return
     }
 
@@ -46,7 +48,7 @@ func run(api *Api, workflowFile string) {
     }
 }
 
-func executeWorkflowScript(api *Api, workflowFile string) {
+func executeWorkflowScript(api *Api, workflowFile string) int {
     log.Println("Executing workflow by Node.js.")
 
     exe := api.CreateExecution()
@@ -70,7 +72,7 @@ func executeWorkflowScript(api *Api, workflowFile string) {
     go processOutput(api, exe, stdout, false)
     go processOutput(api, exe, stderr, true)
 
-    finished := func(err error) {
+    finished := func(err error) int {
         exitStatusCode := 0
         if err != nil {
             log.Println("Error during execution of the workflow script.")
@@ -83,11 +85,11 @@ func executeWorkflowScript(api *Api, workflowFile string) {
         api.FinalizeExecution(exe, exitStatusCode)
         log.Println("Workflow execution took  :", exe.Finish.Sub(exe.Start))
         log.Println("Workflow exit status code:", exe.Status)
+        return exe.Status
     }
 
     if *executionTimeout == 0 {
-        finished(cmd.Wait())
-        return
+        return finished(cmd.Wait())
     }
 
     done := make(chan error, 1)
@@ -100,8 +102,9 @@ func executeWorkflowScript(api *Api, workflowFile string) {
             log.Println("ERROR - failed to kill the workflow process:", err)
         }
         log.Println("Workflow process is killed as timeout reached.")
+        return 1
     case err := <-done:
-        finished(err)
+        return finished(err)
     }
 }
 
