@@ -2,7 +2,41 @@
 
 @include md-core();
 
-$vamp-primary: md-palette($md-pink);
+$md-vamp: (
+  50: #FF405E,
+  100: #FF405E,
+  200: #FF405E,
+  300: #FF405E,
+  400: #FF405E,
+  500: #FF405E,
+  600: #FF405E,
+  700: #FF405E,
+  800: #FF405E,
+  900: #FF405E,
+  A100: #FF405E,
+  A200: #FF405E,
+  A400: #FF405E,
+  A700: #FF405E,
+  contrast: (
+    50: white,
+    100: white,
+    200: white,
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: white,
+    A200: white,
+    A400: white,
+    A700: white,
+  )
+);
+
+
+$vamp-primary: md-palette($md-vamp);
 $vamp-accent : md-palette($md-amber, A200, A100, A400);
 $vamp-warn   : md-palette($md-deep-orange);
 
@@ -41,7 +75,145 @@ $vamp-theme: (
 
 @include angular-material-theme($vamp-theme);
 
+/* roboto-300 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url('fonts/roboto-v15-latin-300.eot'); /* IE9 Compat Modes */
+  src: local('Roboto Light'), local('Roboto-Light'),
+  url('fonts/roboto-v15-latin-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('fonts/roboto-v15-latin-300.woff2') format('woff2'), /* Super Modern Browsers */
+  url('fonts/roboto-v15-latin-300.woff') format('woff'), /* Modern Browsers */
+  url('fonts/roboto-v15-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('fonts/roboto-v15-latin-300.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+/* roboto-500 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  src: url('fonts/roboto-v15-latin-500.eot'); /* IE9 Compat Modes */
+  src: local('Roboto Medium'), local('Roboto-Medium'),
+  url('fonts/roboto-v15-latin-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('fonts/roboto-v15-latin-500.woff2') format('woff2'), /* Super Modern Browsers */
+  url('fonts/roboto-v15-latin-500.woff') format('woff'), /* Modern Browsers */
+  url('fonts/roboto-v15-latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('fonts/roboto-v15-latin-500.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+/* roboto-700 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url('fonts/roboto-v15-latin-700.eot'); /* IE9 Compat Modes */
+  src: local('Roboto Bold'), local('Roboto-Bold'),
+  url('fonts/roboto-v15-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('fonts/roboto-v15-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+  url('fonts/roboto-v15-latin-700.woff') format('woff'), /* Modern Browsers */
+  url('fonts/roboto-v15-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+  url('fonts/roboto-v15-latin-700.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+
 body {
   margin: 0;
   background: #0d1e26;
+}
+
+html {
+  font-size: 10px;
+
+}
+
+@media only screen and (min-width:1200px) and (min-device-pixel-ratio: 2),
+    only screen and (min-width:1200px) and (min-resolution: 192dpi) {
+  html {
+    font-size: 8px;
+  }
+}
+
+body {
+  font-size: 1.4rem;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  color: #C3D2CD;
+  background-color: #0F2735;
+}
+
+/// Mixin to customize scrollbars
+/// Beware, this does not work in all browsers
+/// @author Hugo Giraudel
+/// @param {Length} $size - Horizontal scrollbar's height and vertical scrollbar's width
+/// @param {Color} $foreground-color - Scrollbar's color
+/// @param {Color} $background-color [mix($foreground-color, white, 50%)] - Scrollbar's color
+/// @example scss - Scrollbar styling
+///   @include scrollbars(.5em, slategray);
+@mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white,  50%)) {
+  // For Google Chrome
+  ::-webkit-scrollbar {
+      width:  $size;
+      height: $size;
+  }
+
+  ::-webkit-scrollbar-thumb {
+      background: $foreground-color;
+  }
+
+  ::-webkit-scrollbar-track {
+      background: $background-color;
+  }
+
+  // For Internet Explorer
+  body {
+    scrollbar-face-color: $foreground-color;
+    scrollbar-track-color: $background-color;
+  }
+}
+
+@include scrollbars(.5rem, #959FA9, #09181E);
+
+
+.status-point {
+  display: inline-block;
+  height: 1rem;
+  width: 1rem;
+  border-radius: .5rem;
+
+  &.success {
+    background-color: #3ABA5E;
+    box-shadow: 0 0 .5rem #3ABA5E;
+  }
+
+  &.faliure {
+    background-color: #FF405E;
+    box-shadow: 0 0 .5rem #FF405E;
+  }
+}
+
+.vamp-tag {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: white;
+    border-radius: 2px;
+    margin-right: 5px;
+
+    &.label-success {
+      color: white;
+      background-color: #3ABA5E;
+    }
+
+    &.label-primary {
+      color: white;
+      background-color: rgb(55, 100, 125);
+    }
+
+    &.label-danger {
+      color: white;
+      background-color: #FF405E;
+    }
 }

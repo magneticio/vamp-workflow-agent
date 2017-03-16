@@ -1,6 +1,21 @@
+
+
 .app-content {
 }
 
+.toolbar {
+  background-color: #0D1E26;
+  text-align: center;
+  border-bottom: 1px solid #234B5F;
+  font-weight: 300;
+}
+
+md-toolbar md-toolbar-row {
+  height: 6.5rem;
+}
+button {
+  min-width: 0;
+}
 .app-toolbar-filler {
   flex: 1 1 auto;
 }
@@ -10,17 +25,35 @@
 }
 
 .app-card {
-  padding: 15px;
+  padding: 1rem;
+  border-bottom: 1px solid #0D1E26;
+}
+
+.app-card.clickable {
+  cursor: pointer;
+}
+
+.app-card.clickable:hover {
+  background-color: #142D3C;
 }
 
 .app-execution {
-  height: 64px;
+  height: 4.5rem;
+  line-height: 4.5rem;
 }
 
-.app-spinner {
-  height: 30px;
-  width: 30px;
-  display: inline-block;
+.log-title {
+  height: 3rem;
+  line-height: 3rem;
+  margin-bottom: 1rem;
+}
+
+.log-title > span {
+  margin: 0 1rem;
+}
+
+.log-message {
+  margin: 0 1rem;
 }
 
 .app-action {
