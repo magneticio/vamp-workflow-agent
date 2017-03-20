@@ -22,6 +22,8 @@ project="vamp-workflow-agent"
 
 cd ${dir}
 
+function errexit() { >&2 echo "$(date +%T): Error: $@"; exit 1; }
+
 function parse_command_line() {
     flag_help=0
     flag_list=0
@@ -123,16 +125,25 @@ function docker_make {
 function npm_make {
     cd ${target_vamp}
     echo "${green}npm version: $( npm --version )${reset}"
-    npm install git://github.com/magneticio/vamp-node-client
-    npm install -g removeNPMAbsolutePaths
-    removeNPMAbsolutePaths $(pwd)
+    npm install git://github.com/magneticio/vamp-node-client \
+      || errexit "npm_make: Failed to install vamp-node-client"
+
+    npm install -g removeNPMAbsolutePaths \
+      || errexit "npm_make: Failed to install removeNPMAbsolutePaths"
+
+    removeNPMAbsolutePaths $(pwd) \
+      || errexit "npm_make: Failed to execute removeNPMAbsolutePaths"
 }
 
 function ui_make {
     cd ${ui_dir}
     rm -Rf ${ui_dir}'/node_modules' 2> /dev/null
-    npm install
-    ng build --env=prod
+    npm install \
+      || errexit "ui_make: Failed to install NPM dependencies"
+
+    ng build --env=prod \
+      || errexit "ui_make: Failed to build UI"
+
     mv ${target_ui} ${dir}/${target_vamp}/ui
 }
 
