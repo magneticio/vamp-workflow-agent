@@ -15,7 +15,7 @@
             <div [ngSwitch]="execution.status">
               <i *ngSwitchCase="null" class="fa fa-cog fa-spin"></i>
               <span *ngSwitchCase="0" class="status-point success"></span>
-              <span *ngSwitchDefault class="status-point error"></span>
+              <span *ngSwitchDefault class="status-point faliure"></span>
             </div>
           </md-grid-tile>
           <md-grid-tile>
