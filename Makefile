@@ -14,9 +14,9 @@ ifneq ("$(wildcard Makefile.local)", "")
 endif
 
 # Directories
-PROJECT     := vamp-workflow-agent
-SRCDIR      := $(CURDIR)
-DESTDIR     := target
+PROJECT := vamp-workflow-agent
+SRCDIR  := $(CURDIR)
+DESTDIR := target
 
 # Determine which version we're building
 ifeq ($(shell git describe --tags),$(shell git describe --abbrev=0 --tags))
@@ -120,3 +120,7 @@ clean-docker-context:
 .PHONY: clean-ui
 clean-ui:
 	$(MAKE) -C $(SRCDIR)/ui clean
+
+.PHONY: clean-docker
+clean-docker:
+	docker rmi magneticio/$(PROJECT):$(VERSION)
