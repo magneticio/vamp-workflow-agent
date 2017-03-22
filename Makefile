@@ -50,10 +50,6 @@ export GOFLAGS     := -a -installsuffix cgo
 
 
 
-# Targets
-.PHONY: all
-all: default
-
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
 default:
@@ -65,7 +61,9 @@ default:
 		--volume $(CURDIR):/srv/src/go/src/github.com/magneticio/vamp-workflow-agent \
 		--workdir=/srv/src/go/src/github.com/magneticio/vamp-workflow-agent \
 		$(BUILD_SERVER) \
-			make $(PROJECT)
+			make docker-context
+
+	$(MAKE) docker
 
 $(PROJECT):
 	@echo "Building: $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH)"
@@ -89,23 +87,34 @@ build-ui:
 	$(MAKE) -C $(SRCDIR)/ui
 	mv $(SRCDIR)/ui/dist $(DESTDIR)/vamp/ui
 
-.PHONY: docker
-docker: $(PROJECT) build-npm
+.PHONY: docker-context
+docker-context: $(PROJECT) build-npm build-ui
+	@echo "Creating docker build context"
 	mkdir -p $(DESTDIR)/docker
 	cp $(SRCDIR)/Dockerfile $(DESTDIR)/docker/Dockerfile
 	cp -Rf $(SRCDIR)/files $(DESTDIR)/docker
 	tar -C $(DESTDIR) -zcvf $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz vamp
 	mv $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz $(DESTDIR)/docker
 
+.PHONY: docker
+docker:
+	docker build \
+		--tag=magneticio/$(PROJECT):$(VERSION) \
+		--file=$(DESTDIR)/docker/Dockerfile \
+		$(DESTDIR)/docker
+
+
 .PHONY: clean
-clean: clean-$(PROJECT) clean-docker clean-ui
+clean: clean-$(PROJECT) clean-docker-context clean-ui
+	rm -rf $(DESTDIR)/vamp
+	rm -rf $(DESTDIR)/docker
 
 .PHONY: clean-$(PROJECT)
 clean-$(PROJECT):
 	rm -rf $(DESTDIR)/vamp/$(PROJECT)
 
-.PHONY: clean-docker
-clean-docker:
+.PHONY: clean-docker-context
+clean-docker-context:
 	rm -rf $(DESTDIR)/docker
 
 .PHONY: clean-ui
