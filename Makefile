@@ -75,23 +75,22 @@ $(PROJECT):
 	go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(PROJECT)
 
 
-.PHONY: build_npm
-build_npm:
+.PHONY: build-npm
+build-npm:
 	@echo "Installing vamp-node-client"
 	mkdir -p $(DESTDIR)/vamp
 	npm install --prefix $(DESTDIR)/vamp git://github.com/magneticio/vamp-node-client
 	npm install --prefix /tmp removeNPMAbsolutePaths
 	/tmp/node_modules/.bin/removeNPMAbsolutePaths $(DESTDIR)/vamp
 
-.PHONY: build_ui
-build_ui:
+.PHONY: build-ui
+build-ui:
 	@echo "Building ui"
-	npm install --prefix $(SRCDIR)/ui
-	cd $(SRCDIR)/ui ; $(SRCDIR)/ui/node_modules/.bin/ng build --env=prod
+	$(MAKE) -C $(SRCDIR)/ui
 	mv $(SRCDIR)/ui/dist $(DESTDIR)/vamp/ui
 
 .PHONY: docker
-docker: $(PROJECT) build_npm
+docker: $(PROJECT) build-npm
 	mkdir -p $(DESTDIR)/docker
 	cp $(SRCDIR)/Dockerfile $(DESTDIR)/docker/Dockerfile
 	cp -Rf $(SRCDIR)/files $(DESTDIR)/docker
@@ -99,7 +98,7 @@ docker: $(PROJECT) build_npm
 	mv $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz $(DESTDIR)/docker
 
 .PHONY: clean
-clean: clean-$(PROJECT) clean-docker
+clean: clean-$(PROJECT) clean-docker clean-ui
 
 .PHONY: clean-$(PROJECT)
 clean-$(PROJECT):
@@ -108,3 +107,7 @@ clean-$(PROJECT):
 .PHONY: clean-docker
 clean-docker:
 	rm -rf $(DESTDIR)/docker
+
+.PHONY: clean-ui
+clean-ui:
+	$(MAKE) -C $(SRCDIR)/ui clean
