@@ -128,7 +128,7 @@ class Execution {
   }
 
   public calculate(): void {
-    this.elapsed = this.finish != null ? Date.parse(this.finish) - Date.parse(this.start) : -1;
+    this.elapsed = this.finish != null ? parseInt((Date.parse(this.finish) - Date.parse(this.start)).toString()) : -1;
   }
 }
 
