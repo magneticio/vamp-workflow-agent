@@ -65,6 +65,7 @@ default:
 
 	$(MAKE) docker
 
+# Build the 'vamp-workflow-agent' go binary
 $(PROJECT):
 	@echo "Building: $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH)"
 	mkdir -p $(DESTDIR)/vamp
@@ -72,7 +73,7 @@ $(PROJECT):
 	go install
 	go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(PROJECT)
 
-
+# Install the necessary NodeJS dependencies
 .PHONY: build-npm
 build-npm:
 	@echo "Installing vamp-node-client"
@@ -81,12 +82,15 @@ build-npm:
 	npm install --prefix /tmp removeNPMAbsolutePaths
 	/tmp/node_modules/.bin/removeNPMAbsolutePaths $(DESTDIR)/vamp
 
+# Build the UI
+# All UI build steps are managed in a separate Makefile in the 'ui' directory
 .PHONY: build-ui
 build-ui:
 	@echo "Building ui"
 	$(MAKE) -C $(SRCDIR)/ui
 	mv $(SRCDIR)/ui/dist $(DESTDIR)/vamp/ui
 
+# Copying all necessary files and setting version under 'target/docker/'
 .PHONY: docker-context
 docker-context: $(PROJECT) build-npm build-ui
 	@echo "Creating docker build context"
@@ -97,6 +101,8 @@ docker-context: $(PROJECT) build-npm build-ui
 	mv $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz $(DESTDIR)/docker
 	echo $(VERSION) $$(git describe --tags) > $(DESTDIR)/docker/version
 
+# Building the docker container using the generated context from the
+# 'docker-context' target
 .PHONY: docker
 docker:
 	docker build \
@@ -104,7 +110,7 @@ docker:
 		--file=$(DESTDIR)/docker/Dockerfile \
 		$(DESTDIR)/docker
 
-
+# Remove all files copied/generated from the other targets
 .PHONY: clean
 clean: clean-$(PROJECT) clean-docker-context clean-ui
 	rm -rf $(DESTDIR)/vamp
@@ -122,6 +128,7 @@ clean-docker-context:
 clean-ui:
 	$(MAKE) -C $(SRCDIR)/ui clean
 
+# Remove the docker image from the system
 .PHONY: clean-docker
 clean-docker:
 	docker rmi magneticio/$(PROJECT):$(VERSION)

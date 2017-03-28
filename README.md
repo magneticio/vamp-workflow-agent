@@ -43,34 +43,33 @@ By default the [system module](https://www.elastic.co/guide/en/beats/metricbeat/
 
 ## Building Binary
 
-Using the `build.sh` script:
+Using `make`:
 ```
-  ./build.sh --make
+make vamp-workflow-agent
 ```
 
 Alternatively:
 
-- `go install`
-- `CGO_ENABLED=0 go build -v -a -installsuffix cgo`
+```
+go get -d ./...
+go install
+CGO_ENABLED=0 go build -v -a -installsuffix cgo
+```
 
-Deliverable is in `target/go` directory.
 
 Released binaries can be also [downloaded](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent).
  
 ## Building Docker Images
 
-```
-$ ./build.sh -h
+Building the vamp-workflow-agent Docker image includes building the Go binary, downloading the vamp-node-client and building the workflow UI.
 
-Usage of ./build.sh:
-
-  -h|--help   Help.
-  -l|--list   List built Docker images.
-  -r|--remove Remove Docker image.
-  -m|--make   Build the binary and copy it to the Docker directories.
-  -b|--build  Build Docker image.
-  -a|--all    Build all binaries, by default only linux:amd64.
 ```
+make
+```
+
+Docker images after the build: `magneticio/vamp-workflow-agent:katana`
+
+For more details on available targets see the contents of the `Makefile`.
 
 ## Executing Workflow
 

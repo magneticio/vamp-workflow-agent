@@ -5,7 +5,7 @@ SHELL             := bash
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
-
+# Install the necessary NodeJS dependencies and build the UI
 .PHONY: default
 default:
 	@echo "Building ui"
