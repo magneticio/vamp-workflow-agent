@@ -1,2 +1,3 @@
 target/
 Makefile.local
+vamp-workflow-agent
