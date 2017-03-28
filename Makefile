@@ -95,6 +95,7 @@ docker-context: $(PROJECT) build-npm build-ui
 	cp -Rf $(SRCDIR)/files $(DESTDIR)/docker
 	tar -C $(DESTDIR) -zcvf $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz vamp
 	mv $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz $(DESTDIR)/docker
+	echo $(VERSION) $$(git describe --tags) > $(DESTDIR)/docker/version
 
 .PHONY: docker
 docker:
