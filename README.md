@@ -11,9 +11,9 @@
 
 ## Usage
 
-```
+```bash
 $ ./vamp-workflow-agent -help
-                                       
+
 Usage of ./vamp-workflow-agent:
   -help
         Print usage.
@@ -29,28 +29,20 @@ Usage of ./vamp-workflow-agent:
         Maximum allowed execution time in seconds (0 if no timeout).
 ```
 
-Some arguments are mandatory and if they are not provided, agent will try to get them from environment variables. 
+Some arguments are mandatory and if they are not provided, agent will try to get them from environment variables.
 For environment variable names check out [Executing Workflow](https://github.com/magneticio/vamp-workflow-agent#executing-workflow).
-
-### Metrics
-
-The Vamp workflow agent docker image uses Metricbeat to collect performance metrics and ship them off to Elasticsearch. 
-By default the [system module](https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-module-system.html) is configured to store metrics, with the additional tags to ease filtering:
-
-- `vamp`
-- `workflow`
-- name of running workflow
 
 ## Building Binary
 
 Using `make`:
-```
+
+```bash
 make vamp-workflow-agent
 ```
 
 Alternatively:
 
-```
+```bash
 go get -d ./...
 go install
 CGO_ENABLED=0 go build -v -a -installsuffix cgo
@@ -58,12 +50,12 @@ CGO_ENABLED=0 go build -v -a -installsuffix cgo
 
 
 Released binaries can be also [downloaded](https://bintray.com/magnetic-io/downloads/vamp-workflow-agent).
- 
+
 ## Building Docker Images
 
 Building the vamp-workflow-agent Docker image includes building the Go binary, downloading the vamp-node-client and building the workflow UI.
 
-```
+```bash
 make
 ```
 
@@ -86,7 +78,6 @@ Important environment variables:
 - `VAMP_KEY_VALUE_STORE_PATH <=> key used by confd`
 - `VAMP_WORKFLOW_EXECUTION_PERIOD <=> $executionPeriod`
 - `VAMP_WORKFLOW_EXECUTION_TIMEOUT <=> $executionTimeout`
-- `VAMP_ELASTICSEARCH_URL <=> http://elasticsearch:9200`
 
 Vamp JavaScript API [vamp-node-client](https://github.com/magneticio/vamp-node-client)
 
@@ -98,13 +89,12 @@ Docker Hub [repo](https://hub.docker.com/r/magneticio/vamp-workflow-agent/).
 
 Example:
 
-```
+```bash
 docker run -e VAMP_KEY_VALUE_STORE_TYPE=zookeeper \
            -e VAMP_KEY_VALUE_STORE_CONNECTION=localhost:2181 \
            -e VAMP_KEY_VALUE_STORE_PATH=/scripts \
            -e VAMP_WORKFLOW_EXECUTION_PERIOD=0 \
            -e VAMP_WORKFLOW_EXECUTION_TIMEOUT=10 \
-           -e VAMP_ELASTICSEARCH_URL=http://localhost:9200 \
            magneticio/vamp-workflow-agent:katana
 ```
 
