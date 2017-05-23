@@ -44,9 +44,8 @@ else
 endif
 
 # Compiler flags
-export CGO_ENABLED := 0
 export LDFLAGS     := "-X main.version=$(VERSION)"
-export GOFLAGS     := -a -installsuffix cgo
+export GOFLAGS     := -a
 
 
 
@@ -68,7 +67,6 @@ $(PROJECT):
 	@echo "Building: $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH)"
 	mkdir -p $(DESTDIR)/vamp
 	go get -d ./...
-	go install
 	go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(PROJECT)
 
 # Install the necessary NodeJS dependencies
