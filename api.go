@@ -1,99 +1,106 @@
 package main
 
 import (
-    "time"
-    "log"
-    "container/ring"
+	"container/ring"
+	"log"
+	"time"
 )
 
-type Execution struct {
-    Id     int `json:"id"`
-    Start  time.Time `json:"start"`
-    Finish time.Time `json:"finish"`
-    Status int `json:"status"`
-    Log    []ExecutionLogMessage `json:"log"`
+type execution struct {
+	ID     int                   `json:"id"`
+	Start  time.Time             `json:"start"`
+	Finish time.Time             `json:"finish"`
+	Status int                   `json:"status"`
+	Log    []executionLogMessage `json:"log"`
 }
 
-type ExecutionLogMessage struct {
-    Id        int `json:"id"`
-    Timestamp time.Time `json:"timestamp"`
-    Message   string `json:"message"`
-    Error     bool `json:"error"`
+type executionLogMessage struct {
+	ID        int       `json:"id"`
+	Timestamp time.Time `json:"timestamp"`
+	Message   string    `json:"message"`
+	Error     bool      `json:"error"`
 }
 
-type ExecutionStart struct {
-    Id    int `json:"id"`
-    Start time.Time `json:"start"`
+type executionStart struct {
+	ID    int       `json:"id"`
+	Start time.Time `json:"start"`
 }
 
-type ExecutionFinish struct {
-    Id     int `json:"id"`
-    Finish time.Time `json:"finish"`
-    Status int `json:"status"`
+type executionFinish struct {
+	ID     int       `json:"id"`
+	Finish time.Time `json:"finish"`
+	Status int       `json:"status"`
 }
 
-type ExecutionLog struct {
-    Execution int `json:"execution"`
-    Log       ExecutionLogMessage `json:"log"`
+type executionLog struct {
+	Execution int                 `json:"execution"`
+	Log       executionLogMessage `json:"log"`
 }
 
-var executionId int = 0
-var executions = ring.New(16)
-var failedExecutions = ring.New(16)
-
-type Api struct {
-    stream chan interface{}
+type executionService struct {
+	executionCount               int
+	executions, failedExecutions *ring.Ring
+	stream                       chan interface{}
 }
 
-type ApiReply interface {
-    Reply(message interface{})
+type executionCallbackHandler interface {
+	Reply(message interface{})
 }
 
-func (api *Api) CreateExecution() *Execution {
-    executionId++
-    now := time.Now()
-    exe := &Execution{executionId, now, now, -1, make([]ExecutionLogMessage, 0, 64)}
-
-    executions.Value = exe
-
-    log.Print("New execution:", exe.Id)
-    api.stream <- ExecutionStart{exe.Id, exe.Start}
-
-    return exe
+func newExecutionService() *executionService {
+	return &executionService{
+		executionCount:   0,
+		executions:       ring.New(16),
+		failedExecutions: ring.New(16),
+		stream:           make(chan interface{}),
+	}
 }
 
-func (api *Api) FinalizeExecution(exe *Execution, status int) {
-    exe.Status = status
-    exe.Finish = time.Now()
+func (es *executionService) createExecution() *execution {
+	es.executionCount++
+	now := time.Now()
+	e := &execution{es.executionCount, now, now, -1, make([]executionLogMessage, 0, 64)}
 
-    executions = executions.Next()
+	es.executions.Value = e
 
-    if status > 0 {
-        failedExecutions.Value = exe
-        failedExecutions = failedExecutions.Next()
-    }
+	log.Print("New execution:", e.ID)
+	es.stream <- executionStart{e.ID, e.Start}
 
-    log.Print("Finalized execution:", exe.Id)
-    api.stream <- ExecutionFinish{exe.Id, exe.Finish, exe.Status}
+	return e
 }
 
-func (api *Api) ExecutionLog(exe *Execution, log string, error bool) {
-    message := ExecutionLogMessage{len(exe.Log), time.Now(), log, error}
-    exe.Log = append(exe.Log, message)
-    api.stream <- ExecutionLog{exe.Id, message}
+func (es *executionService) finalizeExecution(e *execution, status int) {
+	e.Status = status
+	e.Finish = time.Now()
+
+	es.executions = es.executions.Next()
+
+	if status > 0 {
+		es.failedExecutions.Value = e
+		es.failedExecutions = es.failedExecutions.Next()
+	}
+
+	log.Print("Finalized execution:", e.ID)
+	es.stream <- executionFinish{e.ID, e.Finish, e.Status}
 }
 
-func (api *Api) Command(command string, replyTo ApiReply) {
-    if command == "execution-history" {
-        executions.Do(func(execution interface{}) {
-            if execution != nil {
-                replyTo.Reply(*execution.(*Execution))
-            }
-        })
-        failedExecutions.Do(func(execution interface{}) {
-            if execution != nil {
-                replyTo.Reply(*execution.(*Execution))
-            }
-        })
-    }
+func (es *executionService) executionLog(e *execution, log string, error bool) {
+	message := executionLogMessage{len(e.Log), time.Now(), log, error}
+	e.Log = append(e.Log, message)
+	es.stream <- executionLog{e.ID, message}
+}
+
+func (es *executionService) command(command string, replyTo executionCallbackHandler) {
+	if command == "execution-history" {
+		es.executions.Do(func(e interface{}) {
+			if e != nil {
+				replyTo.Reply(*e.(*execution))
+			}
+		})
+		es.failedExecutions.Do(func(e interface{}) {
+			if e != nil {
+				replyTo.Reply(*e.(*execution))
+			}
+		})
+	}
 }

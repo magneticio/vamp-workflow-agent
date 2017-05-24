@@ -1,191 +1,192 @@
 package main
 
 import (
-    "log"
-    "strconv"
-    "net/http"
-    "golang.org/x/net/websocket"
-    "io"
-    "fmt"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"strconv"
+
+	"golang.org/x/net/websocket"
 )
 
 const channelBufSize = 100
 
-type WebSocketCommand struct {
-    Command string `json:"command"`
+type wsCommand struct {
+	Command string `json:"command"`
 }
 
-type WebSocketMessage struct {
-    Type    string `json:"type"`
-    Payload interface{} `json:"payload"`
+type wsMessage struct {
+	Type    string      `json:"type"`
+	Payload interface{} `json:"payload"`
 }
 
-type WebSocketServer struct {
-    api          *Api
-    clients      map[int]*WebSocketClient
-    addClient    chan *WebSocketClient
-    removeClient chan *WebSocketClient
-    done         chan bool
-    error        chan error
+type wsServer struct {
+	service      *executionService
+	clients      map[int]*wsClient
+	addClient    chan *wsClient
+	removeClient chan *wsClient
+	done         chan bool
+	error        chan error
 }
 
-type WebSocketClient struct {
-    id         int
-    connection *websocket.Conn
-    server     *WebSocketServer
-    messages   chan *WebSocketMessage
-    done       chan bool
+type wsClient struct {
+	id         int
+	connection *websocket.Conn
+	server     *wsServer
+	messages   chan *wsMessage
+	done       chan bool
 }
 
-func serve(api *Api, port int, path string) {
-    go websocketServe(api)
-    httpServe(port, path)
+func serve(service *executionService, port int, path string) {
+	go websocketServe(service)
+	httpServe(port, path)
 }
 
 func httpServe(port int, path string) {
-    http.Handle("/", http.FileServer(http.Dir(path)))
-    log.Fatal(http.ListenAndServe(":" + strconv.Itoa(port), nil))
+	http.Handle("/", http.FileServer(http.Dir(path)))
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))
 }
 
-func websocketServe(api *Api) {
-    var clientId int = 0
+func websocketServe(service *executionService) {
+	var clientID int
 
-    server := &WebSocketServer{
-        api,
-        make(map[int]*WebSocketClient),
-        make(chan *WebSocketClient),
-        make(chan *WebSocketClient),
-        make(chan bool),
-        make(chan error),
-    }
+	server := &wsServer{
+		service,
+		make(map[int]*wsClient),
+		make(chan *wsClient),
+		make(chan *wsClient),
+		make(chan bool),
+		make(chan error),
+	}
 
-    onConnected := func(ws *websocket.Conn) {
-        defer func() {
-            err := ws.Close()
-            if err != nil {
-                server.error <- err
-            }
-        }()
+	onConnected := func(ws *websocket.Conn) {
+		defer func() {
+			err := ws.Close()
+			if err != nil {
+				server.error <- err
+			}
+		}()
 
-        clientId++
-        client := &WebSocketClient{
-            clientId,
-            ws,
-            server,
-            make(chan *WebSocketMessage, channelBufSize),
-            make(chan bool),
-        }
-        server.addClient <- client
-        client.Listen(api)
-    }
+		clientID++
+		client := &wsClient{
+			clientID,
+			ws,
+			server,
+			make(chan *wsMessage, channelBufSize),
+			make(chan bool),
+		}
+		server.addClient <- client
+		client.listen(service)
+	}
 
-    pattern := "/websocket"
-    log.Println("Creating websocket handler:", pattern)
-    http.Handle(pattern, websocket.Handler(onConnected))
+	pattern := "/websocket"
+	log.Println("Creating websocket handler:", pattern)
+	http.Handle(pattern, websocket.Handler(onConnected))
 
-    for {
-        select {
+	for {
+		select {
 
-        case client := <-server.addClient:
-            log.Println("Add new websocket client:", client.id)
-            server.clients[client.id] = client
-            log.Println("Number of connected clients:", len(server.clients))
+		case client := <-server.addClient:
+			log.Println("Add new websocket client:", client.id)
+			server.clients[client.id] = client
+			log.Println("Number of connected clients:", len(server.clients))
 
-        case client := <-server.removeClient:
-            log.Println("Remove websocket client:", client.id)
-            delete(server.clients, client.id)
+		case client := <-server.removeClient:
+			log.Println("Remove websocket client:", client.id)
+			delete(server.clients, client.id)
 
-        case message := <-server.api.stream:
-            server.broadcast(toWebSocketMessage(message))
+		case message := <-server.service.stream:
+			server.broadcast(toWebSocketMessage(message))
 
-        case err := <-server.error:
-            log.Println("Error:", err.Error())
+		case err := <-server.error:
+			log.Println("Error:", err.Error())
 
-        case <-server.done:
-            return
-        }
-    }
+		case <-server.done:
+			return
+		}
+	}
 }
 
-func (server *WebSocketServer) broadcast(message *WebSocketMessage) {
-    if message != nil {
-        for _, client := range server.clients {
-            client.Write(message)
-        }
-    }
+func (server *wsServer) broadcast(message *wsMessage) {
+	if message != nil {
+		for _, client := range server.clients {
+			client.write(message)
+		}
+	}
 }
 
-func (client *WebSocketClient) Listen(api *Api) {
-    go client.listenWrite()
-    client.listenRead(api)
+func (client *wsClient) listen(service *executionService) {
+	go client.listenWrite()
+	client.listenRead(service)
 }
 
-func (client *WebSocketClient) listenWrite() {
-    for {
-        select {
-        case message := <-client.messages:
-            websocket.JSON.Send(client.connection, message)
+func (client *wsClient) listenWrite() {
+	for {
+		select {
+		case message := <-client.messages:
+			websocket.JSON.Send(client.connection, message)
 
-        case <-client.done:
-            client.server.removeClient <- client
-            client.done <- true
-            return
-        }
-    }
+		case <-client.done:
+			client.server.removeClient <- client
+			client.done <- true
+			return
+		}
+	}
 }
 
-func (client *WebSocketClient) listenRead(api *Api) {
-    for {
-        select {
+func (client *wsClient) listenRead(service *executionService) {
+	for {
+		select {
 
-        case <-client.done:
-            client.server.removeClient <- client
-            client.done <- true
-            return
+		case <-client.done:
+			client.server.removeClient <- client
+			client.done <- true
+			return
 
-        default:
-            var message WebSocketCommand
-            err := websocket.JSON.Receive(client.connection, &message)
-            if err == io.EOF {
-                client.done <- true
-            } else if err != nil {
-                client.server.error <- err
-            } else {
-                log.Println("Command [", client.id, "]", message.Command)
-                api.Command(message.Command, client)
-            }
-        }
-    }
+		default:
+			var message wsCommand
+			err := websocket.JSON.Receive(client.connection, &message)
+			if err == io.EOF {
+				client.done <- true
+			} else if err != nil {
+				client.server.error <- err
+			} else {
+				log.Println("Command [", client.id, "]", message.Command)
+				service.command(message.Command, client)
+			}
+		}
+	}
 }
 
-func (client *WebSocketClient) Write(message *WebSocketMessage) {
-    if message != nil {
-        select {
-        case client.messages <- message:
-        default:
-            client.server.removeClient <- client
-            err := fmt.Errorf("Client %d is already disconnected.", client.id)
-            client.server.error <- err
-        }
-    }
+func (client *wsClient) write(message *wsMessage) {
+	if message != nil {
+		select {
+		case client.messages <- message:
+		default:
+			client.server.removeClient <- client
+			err := fmt.Errorf("client %d is already disconnected: ", client.id)
+			client.server.error <- err
+		}
+	}
 }
 
-func (client *WebSocketClient) Reply(message interface{}) {
-    client.Write(toWebSocketMessage(message))
+func (client *wsClient) Reply(message interface{}) {
+	client.write(toWebSocketMessage(message))
 }
 
-func toWebSocketMessage(message interface{}) *WebSocketMessage {
-    switch t := message.(type) {
-    default:
-        log.Printf("Unexpected message type %T", t)
-        return nil
-    case Execution:
-        return &WebSocketMessage{"execution", message }
-    case ExecutionStart:
-        return &WebSocketMessage{"execution-start", message }
-    case ExecutionFinish:
-        return &WebSocketMessage{"execution-finish", message }
-    case ExecutionLog:
-        return &WebSocketMessage{"execution-log", message }
-    }
+func toWebSocketMessage(message interface{}) *wsMessage {
+	switch t := message.(type) {
+	default:
+		log.Printf("Unexpected message type %T", t)
+		return nil
+	case execution:
+		return &wsMessage{"execution", message}
+	case executionStart:
+		return &wsMessage{"execution-start", message}
+	case executionFinish:
+		return &wsMessage{"execution-finish", message}
+	case executionLog:
+		return &wsMessage{"execution-log", message}
+	}
 }

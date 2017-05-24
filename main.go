@@ -41,10 +41,10 @@ func main() {
 	log.Println("Workflow execution period :", *executionPeriod)
 	log.Println("Workflow execution timeout:", *executionTimeout)
 
-	api := &Api{make(chan interface{})}
+  service := newExecutionService()
 
-	go run(api, *workflow)
-	serve(api, *httpPort, uiAbsPath)
+	go run(service, *workflow)
+	serve(service, *httpPort, uiAbsPath)
 }
 
 func checkInt(argument *int, environmentVariable, panic string) {

@@ -39,7 +39,7 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
         "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME"
 
 ENV LANG=C.UTF-8 \
-    VAMP_WORKFLOW_AGENT_LOGO=true \
+    VAMP_WORKFLOW_AGENT_LOGO=TRUE \
     VAMP_WORKFLOW_PATH=/usr/local/vamp/workflow.js \
     VAMP_WORKFLOW_HTTP_PORT=8080 \
     VAMP_WORKFLOW_UI_PATH=/usr/local/vamp/ui
