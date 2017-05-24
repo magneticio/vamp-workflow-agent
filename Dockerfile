@@ -1,19 +1,9 @@
 FROM magneticio/node:7.4-alpine
 
-# https://github.com/peterbourgon/runsvinit
-ENV RUNSVINIT_URL=https://github.com/peterbourgon/runsvinit/releases/download/v2.0.0/runsvinit-linux-amd64.tgz
-
 ENV CONFD_URL=https://github.com/kelseyhightower/confd/releases/download/v0.11.0/confd-0.11.0-linux-amd64
 
 RUN set -xe \
-    && apk add --no-cache \
-      bash \
-      curl \
-      runit \
-    && curl --location --silent --show-error $RUNSVINIT_URL --output - | tar zxf - -C /sbin \
-    && chown 0:0 /sbin/runsvinit \
-    && chmod 0775 /sbin/runsvinit \
-    \
+    && apk add --no-cache bash curl \
     && curl --location --silent --show-error --output /usr/bin/confd $CONFD_URL \
     && chmod 0755 /usr/bin/confd
 
@@ -48,11 +38,15 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
         "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
         "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME"
 
-ENV LANG=C.UTF-8
-
+ENV LANG=C.UTF-8 \
+    VAMP_WORKFLOW_AGENT_LOGO=true \
+    VAMP_WORKFLOW_PATH=/usr/local/vamp/workflow.js \
+    VAMP_WORKFLOW_HTTP_PORT=8080 \
+    VAMP_WORKFLOW_UI_PATH=/usr/local/vamp/ui
 
 ADD vamp-workflow-agent_*_linux_amd64.tar.gz /usr/local
-ADD files/ /
-ADD version /usr/local/vamp/version
+ADD scripts/start-agent.sh /usr/local/vamp/
+ADD version /usr/local/vamp/
 
-ENTRYPOINT ["/sbin/runsvinit"]
+RUN chmod +x /usr/local/vamp/start-agent.sh
+ENTRYPOINT ["/usr/local/vamp/start-agent.sh"]
