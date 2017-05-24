@@ -1,11 +1,37 @@
 #! /bin/bash
 
-handle() { echo "vamp-workflow-agent/run: got signal"; exit; }
-trap handle SIGINT
+# check required environment variables
+: "${VAMP_KEY_VALUE_STORE_PATH:?VAMP_KEY_VALUE_STORE_PATH required.}"
+: "${VAMP_KEY_VALUE_STORE_TYPE:?VAMP_KEY_VALUE_STORE_TYPE required.}"
+: "${VAMP_KEY_VALUE_STORE_CONNECTION:?VAMP_KEY_VALUE_STORE_CONNECTION required.}"
 
-[[ -e /usr/local/vamp/good2go ]] && exit 0
+mkdir -p /usr/local/vamp/confd/{conf.d,templates}
 
-: "${VAMP_WORKFLOW_AGENT_LOGO:=TRUE}"
+echo "Generating confd template resource and template for workflow.."
+# Generate template resource for workflow
+cat <<EOF > /usr/local/vamp/confd/conf.d/workflow.toml
+[template]
+src = "workflow.tmpl"
+dest = "/usr/local/vamp/workflow.js"
+keys = [ "${VAMP_KEY_VALUE_STORE_PATH}" ]
+EOF
+# Generate template for workflow
+cat <<EOF > /usr/local/vamp/confd/templates/workflow.tmpl
+{{getv "${VAMP_KEY_VALUE_STORE_PATH}"}}
+EOF
+
+echo "Fetching workflow from ${VAMP_KEY_VALUE_STORE_TYPE}.."
+/usr/bin/confd \
+  -onetime=true \
+  -backend "${VAMP_KEY_VALUE_STORE_TYPE}" \
+  -node ${VAMP_KEY_VALUE_STORE_CONNECTION//[,]/" -node "} \
+  -log-level=warn \
+  -confdir /usr/local/vamp/confd
+
+if [ ! -f "$VAMP_WORKFLOW_PATH" ]; then
+  echo "Failed to fetch workflow from $VAMP_KEY_VALUE_STORE_TYPE"
+  exit 1
+fi
 
 if [ "$VAMP_WORKFLOW_AGENT_LOGO" = "TRUE" ] || [ "$VAMP_WORKFLOW_AGENT_LOGO" = "1" ]; then
 echo "
@@ -18,32 +44,12 @@ echo "
 "
 fi
 
-: "${VAMP_KEY_VALUE_STORE_PATH?not provided.}"
-: "${VAMP_KEY_VALUE_STORE_TYPE?not provided.}"
-: "${VAMP_KEY_VALUE_STORE_CONNECTION?not provided.}"
-
 echo "VAMP_KEY_VALUE_STORE_TYPE       : ${VAMP_KEY_VALUE_STORE_TYPE}"
 echo "VAMP_KEY_VALUE_STORE_CONNECTION : ${VAMP_KEY_VALUE_STORE_CONNECTION}"
 echo "VAMP_KEY_VALUE_STORE_PATH       : ${VAMP_KEY_VALUE_STORE_PATH}"
 
 printf "node  " && node --version
 printf "npm   " && npm --version
-/usr/bin/confd -version
-
-/usr/local/vamp/confd-generate-templates.sh
-
-/usr/bin/confd \
-       -onetime=true \
-       -backend ${VAMP_KEY_VALUE_STORE_TYPE} \
-       -node ${VAMP_KEY_VALUE_STORE_CONNECTION} \
-       -log-level=warn \
-       -confdir /usr/local/vamp/confd || exit 1
-
-touch /usr/local/vamp/good2go
-
-: "${VAMP_WORKFLOW_PATH:="/usr/local/vamp/workflow.js"}"
-: "${VAMP_WORKFLOW_HTTP_PORT:=8080}"
-: "${VAMP_WORKFLOW_UI_PATH:="/usr/local/vamp/ui/"}"
 
 exec 2>&1
 exec /usr/local/vamp/vamp-workflow-agent \

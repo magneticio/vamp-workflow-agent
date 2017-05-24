@@ -44,10 +44,9 @@ else
 endif
 
 # Compiler flags
-export LDFLAGS     := "-X main.version=$(VERSION)"
-export GOFLAGS     := -a
-
-
+export CGO_ENABLED  := 0
+export LDFLAGS      := "-X main.version=$(VERSION)"
+export GOFLAGS      := -a
 
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
@@ -84,6 +83,7 @@ build-npm:
 build-ui:
 	@echo "Building ui"
 	$(MAKE) -C $(SRCDIR)/ui
+	if [ -d $(DESTDIR)/vamp/ui ]; then rm -rf $(DESTDIR)/vamp/ui; fi
 	mv $(SRCDIR)/ui/dist $(DESTDIR)/vamp/ui
 
 # Copying all necessary files and setting version under 'target/docker/'
@@ -92,7 +92,7 @@ docker-context: $(PROJECT) build-npm build-ui
 	@echo "Creating docker build context"
 	mkdir -p $(DESTDIR)/docker
 	cp $(SRCDIR)/Dockerfile $(DESTDIR)/docker/Dockerfile
-	cp -Rf $(SRCDIR)/files $(DESTDIR)/docker
+	cp -Rf $(SRCDIR)/scripts $(DESTDIR)/docker
 	tar -C $(DESTDIR) -zcvf $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz vamp
 	mv $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz $(DESTDIR)/docker
 	echo $(VERSION) $$(git describe --tags) > $(DESTDIR)/docker/version

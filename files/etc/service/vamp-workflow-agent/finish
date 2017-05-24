@@ -1,6 +1,0 @@
-#! /bin/bash
-
-if [[ $VAMP_WORKFLOW_EXECUTION_PERIOD -eq 0 ]] ; then
-  # Single execution of workflow, so we shutdown the container
-  kill -15 1
-fi
