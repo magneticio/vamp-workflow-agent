@@ -86,6 +86,7 @@ build-npm:
 build-ui:
 	@echo "Building ui"
 	$(MAKE) -C $(SRCDIR)/ui
+	[ -d $(SRCDIR)/ui/dist ] && rm -rf $(DESTDIR)/vamp/ui
 	mv $(SRCDIR)/ui/dist $(DESTDIR)/vamp/ui
 
 # Copying all necessary files and setting version under 'target/docker/'
