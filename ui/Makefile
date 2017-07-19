@@ -10,6 +10,7 @@ SHELL             := bash
 default:
 	@echo "Building ui"
 	npm install
+	npm install font-awesome --save
 	$(CURDIR)/node_modules/.bin/ng build --env=prod
 
 .PHONY: clean
