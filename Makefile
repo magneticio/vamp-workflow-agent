@@ -77,7 +77,7 @@ build-npm:
 	@echo "Installing vamp-node-client"
 	mkdir -p $(DESTDIR)/vamp
 	npm install --prefix $(DESTDIR)/vamp git://github.com/magneticio/vamp-node-client
-	npm install --prefix /tmp removeNPMAbsolutePaths
+	npm install --prefix /tmp removeNPMAbsolutePaths@0.0.3
 	/tmp/node_modules/.bin/removeNPMAbsolutePaths $(DESTDIR)/vamp
 
 # Build the UI
