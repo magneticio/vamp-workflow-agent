@@ -77,7 +77,7 @@ build-npm:
 	@echo "Installing vamp-node-client"
 	mkdir -p $(DESTDIR)/vamp
 	npm install --prefix $(DESTDIR)/vamp git://github.com/magneticio/vamp-node-client
-	npm install --prefix /tmp removeNPMAbsolutePaths
+	npm install --prefix /tmp removeNPMAbsolutePaths@0.0.3
 	/tmp/node_modules/.bin/removeNPMAbsolutePaths $(DESTDIR)/vamp
 
 # Build the UI
@@ -86,6 +86,7 @@ build-npm:
 build-ui:
 	@echo "Building ui"
 	$(MAKE) -C $(SRCDIR)/ui
+	[ -d $(SRCDIR)/ui/dist ] && rm -rf $(DESTDIR)/vamp/ui
 	mv $(SRCDIR)/ui/dist $(DESTDIR)/vamp/ui
 
 # Copying all necessary files and setting version under 'target/docker/'
