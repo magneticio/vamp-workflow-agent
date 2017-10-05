@@ -59,7 +59,7 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
 ENV LANG=C.UTF-8
 
 
-ADD vamp-workflow-agent_*_linux_amd64.tar.gz /usr/local
+ADD vamp-workflow-agent_*_linux_amd64.tar.gz /usr/local/
 ADD files/ /
 ADD version /usr/local/vamp/version
 

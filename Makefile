@@ -22,7 +22,11 @@ DESTDIR := target
 ifeq ($(shell git describe --tags),$(shell git describe --abbrev=0 --tags))
 	export VERSION := $(shell git describe --tags)
 else
-	export VERSION := katana
+	ifeq ($(VAMP_GIT_BRANCH), $(filter $(VAMP_GIT_BRANCH), "master" ""))
+		export VERSION := katana
+	else
+		export VERSION := $(VAMP_GIT_BRANCH)
+	endif
 endif
 
 # Determine operating system
@@ -77,7 +81,7 @@ build-npm:
 	@echo "Installing vamp-node-client"
 	mkdir -p $(DESTDIR)/vamp
 	npm install --prefix $(DESTDIR)/vamp git://github.com/magneticio/vamp-node-client
-	npm install --prefix /tmp removeNPMAbsolutePaths
+	npm install --prefix /tmp removeNPMAbsolutePaths@0.0.3
 	/tmp/node_modules/.bin/removeNPMAbsolutePaths $(DESTDIR)/vamp
 
 # Build the UI
@@ -86,6 +90,7 @@ build-npm:
 build-ui:
 	@echo "Building ui"
 	$(MAKE) -C $(SRCDIR)/ui
+	[ -d $(SRCDIR)/ui/dist ] && rm -rf $(DESTDIR)/vamp/ui
 	mv $(SRCDIR)/ui/dist $(DESTDIR)/vamp/ui
 
 # Copying all necessary files and setting version under 'target/docker/'
