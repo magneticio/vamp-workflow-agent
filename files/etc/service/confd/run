@@ -13,10 +13,20 @@ for dependency in /usr/local/vamp/confd/conf.d/workflow.toml /usr/local/vamp/con
 done
 
 exec 2>&1
-exec /usr/bin/confd \
+
+if [[ -z ${VAMP_KEY_VALUE_STORE_TOKEN} ]] ; then
+  exec /usr/bin/confd \
        -onetime=true \
        -backend ${VAMP_KEY_VALUE_STORE_TYPE} \
        -node ${VAMP_KEY_VALUE_STORE_CONNECTION//[,]/" -node "} \
        -log-level=warn \
        -confdir /usr/local/vamp/confd
-       
+else
+  exec /usr/bin/confd \
+       -onetime=true \
+       -backend ${VAMP_KEY_VALUE_STORE_TYPE} \
+       -node ${VAMP_KEY_VALUE_STORE_CONNECTION//[,]/" -node "} \
+       -auth-type token -auth-token ${VAMP_KEY_VALUE_STORE_TOKEN} \
+       -log-level=warn \
+       -confdir /usr/local/vamp/confd
+fi
