@@ -28,6 +28,12 @@ echo "VAMP_KEY_VALUE_STORE_CONNECTION : ${VAMP_KEY_VALUE_STORE_CONNECTION}"
 echo "VAMP_KEY_VALUE_STORE_PATH       : ${VAMP_KEY_VALUE_STORE_PATH}"
 echo "VAMP_ELASTICSEARCH_URL          : ${VAMP_ELASTICSEARCH_URL}"
 
+if [[ -z ${VAMP_KEY_VALUE_STORE_TOKEN} ]] ; then
+  echo "VAMP_KEY_VALUE_STORE_TOKEN      :
+else
+  echo "VAMP_KEY_VALUE_STORE_TOKEN      : **********
+fi
+
 printf "node  " && node --version
 printf "npm   " && npm --version
 /usr/bin/confd -version
