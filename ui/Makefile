@@ -5,13 +5,16 @@ SHELL             := bash
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
+# Targets
+.PHONY: all
+all: default
+
 # Install the necessary NodeJS dependencies and build the UI
 .PHONY: default
 default:
 	@echo "Building ui"
 	npm install
-	npm install font-awesome --save
-	$(CURDIR)/node_modules/.bin/ng build --env=prod
+	npm run ng -- build --env=prod
 
 .PHONY: clean
 clean:

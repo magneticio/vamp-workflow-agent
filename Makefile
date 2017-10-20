@@ -22,7 +22,7 @@ DESTDIR := target
 ifeq ($(shell git describe --tags),$(shell git describe --abbrev=0 --tags))
 	export VERSION := $(shell git describe --tags)
 else
-	ifeq ($(VAMP_GIT_BRANCH), $(filter $(VAMP_GIT_BRANCH), "master" ""))
+	ifeq ($(VAMP_GIT_BRANCH), $(filter $(VAMP_GIT_BRANCH), master ""))
 		export VERSION := katana
 	else
 		export VERSION := $(VAMP_GIT_BRANCH)
@@ -52,13 +52,16 @@ export CGO_ENABLED := 0
 export LDFLAGS     := "-X main.version=$(VERSION)"
 export GOFLAGS     := -a -installsuffix cgo
 
-
+# Targets
+.PHONY: all
+all: default
 
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
 default:
 	docker pull $(BUILD_SERVER)
 	docker run \
+		--name buildagent \
 		--rm \
 		--volume $(CURDIR):/srv/src/go/src/github.com/magneticio/vamp-workflow-agent \
 		--workdir=/srv/src/go/src/github.com/magneticio/vamp-workflow-agent \
