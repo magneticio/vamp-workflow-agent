@@ -7,6 +7,8 @@ SHELL             := bash
 
 # Constants, these can be overwritten in your Makefile.local
 BUILD_SERVER := magneticio/buildserver
+DIR_NPM	     := $(HOME)/.npm
+DIR_GYP	     := $(HOME)/.node-gyp
 
 # if Makefile.local exists, include it.
 ifneq ("$(wildcard Makefile.local)", "")
@@ -58,13 +60,17 @@ all: default
 
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
-default:
+default: clean-check
 	docker pull $(BUILD_SERVER)
 	docker run \
 		--name buildagent \
 		--rm \
-		--volume $(CURDIR):/srv/src/go/src/github.com/magneticio/vamp-workflow-agent \
-		--workdir=/srv/src/go/src/github.com/magneticio/vamp-workflow-agent \
+		--volume $(CURDIR):/srv/src \
+		--volume $(DIR_NPM):/home/vamp/.npm \
+		--volume $(DIR_GYP):/home/vamp/.node-gyp \
+		--workdir=/srv/src \
+		--env BUILD_UID=$(shell id -u) \
+		--env BUILD_GID=$(shell id -g) \
 		$(BUILD_SERVER) \
 			make docker-context
 
@@ -74,9 +80,13 @@ default:
 $(PROJECT):
 	@echo "Building: $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH)"
 	mkdir -p $(DESTDIR)/vamp
-	go get -d ./...
-	go install
-	go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(PROJECT)
+	rm -rf $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
+	mkdir -p $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
+	cp -a *.go $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
+	export GOPATH=$(realpath $(DESTDIR))/go && \
+		cd $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT) && \
+		go get -d ./... && \
+		go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(PROJECT)
 
 # Install the necessary NodeJS dependencies
 .PHONY: build-npm
@@ -124,7 +134,7 @@ clean: clean-$(PROJECT) clean-docker-context clean-ui
 
 .PHONY: clean-$(PROJECT)
 clean-$(PROJECT):
-	rm -rf $(DESTDIR)/vamp/$(PROJECT)
+	rm -rf $(DESTDIR)/vamp/$(PROJECT) $(DESTDIR)/go
 
 .PHONY: clean-docker-context
 clean-docker-context:
@@ -138,3 +148,15 @@ clean-ui:
 .PHONY: clean-docker
 clean-docker:
 	docker rmi magneticio/$(PROJECT):$(VERSION)
+
+.PHONY: clean-check
+clean-check:
+	if [ $$(find -uid 0 -print -quit | wc -l) -eq 1 ]; then \
+		docker run \
+		--name buildagent \
+		--rm \
+		--volume $(CURDIR):/srv/src \
+		--workdir=/srv/src \
+		$(BUILD_SERVER) \
+			make clean; \
+	fi
