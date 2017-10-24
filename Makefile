@@ -83,7 +83,7 @@ $(PROJECT):
 	rm -rf $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
 	mkdir -p $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
 	cp -a *.go $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
-	export GOPATH=$(realpath $(DESTDIR))/go && \
+	export GOPATH=$(abspath $(DESTDIR))/go && \
 		cd $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT) && \
 		go get -d ./... && \
 		go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(PROJECT)

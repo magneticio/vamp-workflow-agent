@@ -13,7 +13,10 @@ all: default
 .PHONY: default
 default:
 	@echo "Building ui"
+	npm rebuild node-sass
 	npm install
+	npm update
+	npm prune
 	npm run ng -- build --env=prod
 
 .PHONY: clean
