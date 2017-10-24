@@ -129,8 +129,7 @@ docker:
 # Remove all files copied/generated from the other targets
 .PHONY: clean
 clean: clean-$(PROJECT) clean-docker-context clean-ui
-	rm -rf $(DESTDIR)/vamp
-	rm -rf $(DESTDIR)/docker
+	rm -rf $(DESTDIR)
 
 .PHONY: clean-$(PROJECT)
 clean-$(PROJECT):
