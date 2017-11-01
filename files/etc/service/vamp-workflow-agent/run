@@ -28,18 +28,35 @@ echo "VAMP_KEY_VALUE_STORE_CONNECTION : ${VAMP_KEY_VALUE_STORE_CONNECTION}"
 echo "VAMP_KEY_VALUE_STORE_PATH       : ${VAMP_KEY_VALUE_STORE_PATH}"
 echo "VAMP_ELASTICSEARCH_URL          : ${VAMP_ELASTICSEARCH_URL}"
 
+if [[ -z ${VAMP_KEY_VALUE_STORE_TOKEN} ]] ; then
+  echo "VAMP_KEY_VALUE_STORE_TOKEN      : "
+else
+  echo "VAMP_KEY_VALUE_STORE_TOKEN      : **********"
+fi
+
 printf "node  " && node --version
 printf "npm   " && npm --version
 /usr/bin/confd -version
 
 /usr/local/vamp/confd-generate-templates.sh
 
-/usr/bin/confd \
-       -onetime=true \
-       -backend ${VAMP_KEY_VALUE_STORE_TYPE} \
-       -node ${VAMP_KEY_VALUE_STORE_CONNECTION} \
-       -log-level=warn \
-       -confdir /usr/local/vamp/confd || exit 1
+if [[ -z ${VAMP_KEY_VALUE_STORE_TOKEN} ]] ; then
+  /usr/bin/confd \
+     -onetime=true \
+     -backend ${VAMP_KEY_VALUE_STORE_TYPE} \
+     -node ${VAMP_KEY_VALUE_STORE_CONNECTION} \
+     -log-level=warn \
+     -confdir /usr/local/vamp/confd || exit 1
+else
+  /usr/bin/confd \
+     -onetime=true \
+     -backend ${VAMP_KEY_VALUE_STORE_TYPE} \
+     -node ${VAMP_KEY_VALUE_STORE_CONNECTION} \
+     -auth-type token -auth-token ${VAMP_KEY_VALUE_STORE_TOKEN} \
+     -log-level=warn \
+     -confdir /usr/local/vamp/confd || exit 1
+fi
+
 
 touch /usr/local/vamp/good2go
 
