@@ -63,7 +63,6 @@ all: default
 default: clean-check
 	docker pull $(BUILD_SERVER)
 	docker run \
-		--name buildagent \
 		--rm \
 		--volume $(CURDIR):/srv/src \
 		--volume $(DIR_NPM):/home/vamp/.npm \
@@ -152,7 +151,6 @@ clean-docker:
 clean-check:
 	if [ $$(find -uid 0 -print -quit | wc -l) -eq 1 ]; then \
 		docker run \
-		--name buildagent \
 		--rm \
 		--volume $(CURDIR):/srv/src \
 		--workdir=/srv/src \
