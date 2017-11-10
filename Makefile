@@ -121,7 +121,7 @@ docker-context: $(PROJECT) build-npm build-ui
 .PHONY: docker
 docker:
 	docker build \
-		--tag=magneticio/$(PROJECT):$(VERSION) \
+		--tag=magneticio/$(PROJECT):$(VAMP_TAG_PREFIX)$(VERSION) \
 		--file=$(DESTDIR)/docker/Dockerfile \
 		$(DESTDIR)/docker
 
@@ -145,7 +145,7 @@ clean-ui:
 # Remove the docker image from the system
 .PHONY: clean-docker
 clean-docker:
-	docker rmi magneticio/$(PROJECT):$(VERSION)
+	docker rmi magneticio/$(PROJECT):$(VAMP_TAG_PREFIX)$(VERSION)
 
 .PHONY: clean-check
 clean-check:
