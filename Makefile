@@ -16,7 +16,8 @@ ifneq ("$(wildcard Makefile.local)", "")
 endif
 
 # Directories
-PROJECT := vamp-workflow-agent
+BINARY  := vamp-workflow-agent
+PROJECT := $(BINARY)
 SRCDIR  := $(CURDIR)
 DESTDIR := target
 
@@ -76,16 +77,16 @@ default: clean-check
 	$(MAKE) docker
 
 # Build the 'vamp-workflow-agent' go binary
-$(PROJECT):
-	@echo "Building: $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH)"
+$(BINARY):
+	@echo "Building: $(BINARY)_$(VERSION)_$(GOOS)_$(GOARCH)"
 	mkdir -p $(DESTDIR)/vamp
-	rm -rf $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
-	mkdir -p $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
-	cp -a *.go $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT)
+	rm -rf $(DESTDIR)/go/src/github.com/magneticio/$(BINARY)
+	mkdir -p $(DESTDIR)/go/src/github.com/magneticio/$(BINARY)
+	cp -a *.go $(DESTDIR)/go/src/github.com/magneticio/$(BINARY)
 	export GOPATH=$(abspath $(DESTDIR))/go && \
-		cd $(DESTDIR)/go/src/github.com/magneticio/$(PROJECT) && \
+		cd $(DESTDIR)/go/src/github.com/magneticio/$(BINARY) && \
 		go get -d ./... && \
-		go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(PROJECT)
+		go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(BINARY)
 
 # Install the necessary NodeJS dependencies
 .PHONY: build-npm
@@ -107,13 +108,13 @@ build-ui:
 
 # Copying all necessary files and setting version under 'target/docker/'
 .PHONY: docker-context
-docker-context: $(PROJECT) build-npm build-ui
+docker-context: $(BINARY) build-npm build-ui
 	@echo "Creating docker build context"
 	mkdir -p $(DESTDIR)/docker
 	cp $(SRCDIR)/Dockerfile $(DESTDIR)/docker/Dockerfile
 	cp -Rf $(SRCDIR)/files $(DESTDIR)/docker
-	tar -C $(DESTDIR) -zcvf $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz vamp
-	mv $(PROJECT)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz $(DESTDIR)/docker
+	tar -C $(DESTDIR) -zcvf $(BINARY)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz vamp
+	mv $(BINARY)_$(VERSION)_$(GOOS)_$(GOARCH).tar.gz $(DESTDIR)/docker
 	echo $(VERSION) $$(git describe --tags) > $(DESTDIR)/docker/version
 
 # Building the docker container using the generated context from the
@@ -127,12 +128,12 @@ docker:
 
 # Remove all files copied/generated from the other targets
 .PHONY: clean
-clean: clean-$(PROJECT) clean-docker-context clean-ui
+clean: clean-$(BINARY) clean-docker-context clean-ui
 	rm -rf $(DESTDIR)
 
-.PHONY: clean-$(PROJECT)
-clean-$(PROJECT):
-	rm -rf $(DESTDIR)/vamp/$(PROJECT) $(DESTDIR)/go
+.PHONY: clean-$(BINARY)
+clean-$(BINARY):
+	rm -rf $(DESTDIR)/vamp/$(BINARY) $(DESTDIR)/go
 
 .PHONY: clean-docker-context
 clean-docker-context:
