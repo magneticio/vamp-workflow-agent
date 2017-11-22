@@ -84,9 +84,9 @@ $(BINARY):
 	mkdir -p $(DESTDIR)/go/src/github.com/magneticio/$(BINARY)
 	cp -a *.go $(DESTDIR)/go/src/github.com/magneticio/$(BINARY)
 	export GOPATH=$(abspath $(DESTDIR))/go && \
-		cd $(DESTDIR)/go/src/github.com/magneticio/$(BINARY) && \
+		cd $(abspath $(DESTDIR))/go/src/github.com/magneticio/$(BINARY) && \
 		go get -d ./... && \
-		go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(DESTDIR)/vamp/$(BINARY)
+		go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(abspath $(DESTDIR))/vamp/$(BINARY)
 
 # Install the necessary NodeJS dependencies
 .PHONY: build-npm
