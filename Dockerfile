@@ -63,4 +63,6 @@ ADD vamp-workflow-agent_*_linux_amd64.tar.gz /usr/local/
 ADD files/ /
 ADD version /usr/local/vamp/version
 
+RUN chmod +x /usr/local/vamp/tokenrenewer.sh
+
 ENTRYPOINT ["/sbin/runsvinit"]

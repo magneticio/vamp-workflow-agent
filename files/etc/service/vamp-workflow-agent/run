@@ -69,3 +69,7 @@ exec /usr/local/vamp/vamp-workflow-agent \
         --workflow="$VAMP_WORKFLOW_PATH" \
         --httpPort="$VAMP_WORKFLOW_HTTP_PORT" \
         --uiPath="$VAMP_WORKFLOW_UI_PATH"
+
+if [ "${VAMP_KEY_VALUE_STORE_TYPE}" == "vault" ]; then
+  /usr/local/vamp/tokenrenewer.sh &
+fi
