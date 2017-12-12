@@ -61,7 +61,7 @@ all: default
 
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
-default: clean-check
+default:
 	docker pull $(BUILD_SERVER)
 	docker run \
 		--rm \
@@ -147,14 +147,3 @@ clean-ui:
 .PHONY: clean-docker
 clean-docker:
 	docker rmi magneticio/$(PROJECT):$(VAMP_TAG_PREFIX)$(VERSION)
-
-.PHONY: clean-check
-clean-check:
-	if [ $$(find -uid 0 -print -quit | wc -l) -eq 1 ]; then \
-		docker run \
-		--rm \
-		--volume $(CURDIR):/srv/src \
-		--workdir=/srv/src \
-		$(BUILD_SERVER) \
-			make clean; \
-	fi
