@@ -52,7 +52,7 @@ endif
 
 # Compiler flags
 export CGO_ENABLED := 0
-export LDFLAGS     := "-X main.version=$(VERSION)"
+export GOLDFLAGS     := "-X main.version=$(VERSION)"
 export GOFLAGS     := -a -installsuffix cgo
 
 # Targets
@@ -86,7 +86,7 @@ $(BINARY):
 	export GOPATH=$(abspath $(DESTDIR))/go && \
 		cd $(abspath $(DESTDIR))/go/src/github.com/magneticio/$(BINARY) && \
 		go get -d ./... && \
-		go build -ldflags $(LDFLAGS) $(GOFLAGS) -o $(abspath $(DESTDIR))/vamp/$(BINARY)
+		go build -ldflags $(GOLDFLAGS) $(GOFLAGS) -o $(abspath $(DESTDIR))/vamp/$(BINARY)
 
 # Install the necessary NodeJS dependencies
 .PHONY: build-npm
