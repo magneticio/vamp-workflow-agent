@@ -32,15 +32,6 @@ Usage of ./vamp-workflow-agent:
 Some arguments are mandatory and if they are not provided, agent will try to get them from environment variables. 
 For environment variable names check out [Executing Workflow](https://github.com/magneticio/vamp-workflow-agent#executing-workflow).
 
-### Metrics
-
-The Vamp workflow agent docker image uses Metricbeat to collect performance metrics and ship them off to Elasticsearch. 
-By default the [system module](https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-module-system.html) is configured to store metrics, with the additional tags to ease filtering:
-
-- `vamp`
-- `workflow`
-- name of running workflow
-
 ## Building Binary
 
 Using `make`:

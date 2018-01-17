@@ -5,9 +5,6 @@ ENV RUNSVINIT_URL=https://github.com/peterbourgon/runsvinit/releases/download/v2
 
 ENV CONFD_URL=https://github.com/kelseyhightower/confd/releases/download/v0.13.0/confd-0.13.0-linux-amd64
 
-ENV METRICBEAT_VER=5.1.2
-ENV METRICBEAT_URL=https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-${METRICBEAT_VER}-linux-x86_64.tar.gz
-
 RUN set -xe \
     && apk add --no-cache \
       bash \
@@ -18,12 +15,7 @@ RUN set -xe \
     && chmod 0775 /sbin/runsvinit \
     \
     && curl --location --silent --show-error --output /usr/bin/confd $CONFD_URL \
-    && chmod 0755 /usr/bin/confd \
-    \
-    && mkdir -p /usr/local/metricbeat/ \
-    && curl --location --silent --show-error $METRICBEAT_URL --output - | tar zxf - -C /tmp \
-    && mv /tmp/metricbeat-${METRICBEAT_VER}-linux-x86_64/metricbeat /usr/local/metricbeat/ \
-    && rm -rf /tmp/metricbeat-${METRICBEAT_VER}-linux-x86_64
+    && chmod 0755 /usr/bin/confd
 
 RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" && \
     ALPINE_GLIBC_PACKAGE_VERSION="2.23-r3" && \
