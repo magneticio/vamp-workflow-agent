@@ -21,6 +21,6 @@ default:
 
 .PHONY: clean
 clean:
-	rm -rf $(CURDIR)/node_modules
-	rm -rf $(CURDIR)/dist
-	rm -rf $(CURDIR)/npm-debug.log
+	rm -rf "$(CURDIR)"/node_modules
+	rm -rf "$(CURDIR)"/dist
+	rm -rf "$(CURDIR)"/npm-debug.log
