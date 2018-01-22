@@ -1,8 +1,8 @@
-# Alpine 3.5 + NodeJS 7.4.0 container base image. For more details see:
+# Alpine 3.6 + NodeJS 7.4.0 container base image. For more details see:
 # - https://github.com/magneticio/vamp-workflow-agent/issues/11
 # - https://github.com/nodejs/docker-node/blob/master/7.4/alpine/Dockerfile
 
-FROM alpine:3.5
+FROM alpine:3.6
 
 ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 7.4.0

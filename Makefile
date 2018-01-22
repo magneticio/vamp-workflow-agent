@@ -120,11 +120,15 @@ docker-context: $(BINARY) build-npm build-ui
 # Building the docker container using the generated context from the
 # 'docker-context' target
 .PHONY: docker
-docker:
+docker: alpine
 	docker build \
 		--tag=magneticio/$(PROJECT):$(VAMP_TAG_PREFIX)$(VERSION) \
 		--file=$(DESTDIR)/docker/Dockerfile \
 		$(DESTDIR)/docker
+
+.PHONY:alpine
+alpine:
+	$(MAKE) -C alpine
 
 # Remove all files copied/generated from the other targets
 .PHONY: clean
