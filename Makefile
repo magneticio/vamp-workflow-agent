@@ -7,8 +7,6 @@ SHELL             := bash
 
 # Constants, these can be overwritten in your Makefile.local
 BUILD_SERVER := magneticio/buildserver
-DIR_NPM	     := "$(HOME)"/.npm
-DIR_GYP	     := "$(HOME)"/.node-gyp
 
 # if Makefile.local exists, include it.
 ifneq ("$(wildcard Makefile.local)", "")
@@ -20,6 +18,8 @@ BINARY  := vamp-workflow-agent
 PROJECT := $(BINARY)
 SRCDIR  := "$(CURDIR)"
 DESTDIR := target
+DIR_NPM := .npm
+DIR_GYP := .node-gyp
 
 # Determine which version we're building
 ifeq ($(shell git describe --tags),$(shell git describe --abbrev=0 --tags))
@@ -62,12 +62,13 @@ all: default
 # Using our buildserver which contains all the necessary dependencies
 .PHONY: default
 default:
+	mkdir -p $(DESTDIR)/$(DIR_NPM) $(DESTDIR)/$(DIR_GYP)
 	test "$(DEPS_OK)" = "true" || docker pull $(BUILD_SERVER)
 	docker run \
 		--rm \
 		--volume "$(CURDIR)":/srv/src \
-		--volume $(DIR_NPM):/home/vamp/.npm \
-		--volume $(DIR_GYP):/home/vamp/.node-gyp \
+		--volume "$(CURDIR)"/$(DESTDIR)/$(DIR_NPM):/home/vamp/.npm \
+		--volume "$(CURDIR)"/$(DESTDIR)/$(DIR_GYP):/home/vamp/.node-gyp \
 		--workdir=/srv/src \
 		--env BUILD_UID=$(shell id -u) \
 		--env BUILD_GID=$(shell id -g) \
