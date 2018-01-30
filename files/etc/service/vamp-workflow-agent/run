@@ -28,6 +28,15 @@ echo "VAMP_KEY_VALUE_STORE_CONNECTION : ${VAMP_KEY_VALUE_STORE_CONNECTION}"
 echo "VAMP_KEY_VALUE_STORE_PATH       : ${VAMP_KEY_VALUE_STORE_PATH}"
 echo "VAMP_ELASTICSEARCH_URL          : ${VAMP_ELASTICSEARCH_URL}"
 
+if [[ "${VAMP_KEY_VALUE_STORE_TYPE}" == "vault" && -n ${VAMP_VAULT_CERTIFICATE_NAME} ]]; then
+  curl --cacert ${CONFD_CLIENT_CAKEYS} \
+       --cert ${CONFD_CLIENT_CERT} \
+       --key ${CONFD_CLIENT_KEY} \
+       --request POST --data "{\"name\": \"${VAMP_VAULT_CERTIFICATE_NAME}\"}" -s \
+       ${VAMP_KEY_VALUE_STORE_CONNECTION}/v1/auth/cert/login | jq -r .auth.client_token > /usr/local/vamp/token
+       VAMP_KEY_VALUE_STORE_TOKEN="$( cat /usr/local/vamp/token )"
+fi
+
 if [[ -z ${VAMP_KEY_VALUE_STORE_TOKEN} ]] ; then
   echo "VAMP_KEY_VALUE_STORE_TOKEN      : "
 else
@@ -56,7 +65,6 @@ else
      -log-level=warn \
      -confdir /usr/local/vamp/confd || exit 1
 fi
-
 
 touch /usr/local/vamp/good2go
 

@@ -3,7 +3,7 @@ FROM magneticio/node:7.4-alpine
 # https://github.com/peterbourgon/runsvinit
 ENV RUNSVINIT_URL=https://github.com/peterbourgon/runsvinit/releases/download/v2.0.0/runsvinit-linux-amd64.tgz
 
-ENV CONFD_URL=https://github.com/kelseyhightower/confd/releases/download/v0.13.0/confd-0.13.0-linux-amd64
+ENV CONFD_URL=https://github.com/kelseyhightower/confd/releases/download/v0.15.0/confd-0.15.0-linux-amd64
 
 RUN set -xe \
     && apk add --no-cache \
