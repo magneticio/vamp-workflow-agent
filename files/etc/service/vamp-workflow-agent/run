@@ -72,12 +72,12 @@ touch /usr/local/vamp/good2go
 : "${VAMP_WORKFLOW_HTTP_PORT:=8080}"
 : "${VAMP_WORKFLOW_UI_PATH:="/usr/local/vamp/ui/"}"
 
+if [ "${VAMP_KEY_VALUE_STORE_TYPE}" == "vault" ]; then
+  /usr/local/vamp/tokenrenewer.sh &
+fi
+
 exec 2>&1
 exec /usr/local/vamp/vamp-workflow-agent \
         --workflow="$VAMP_WORKFLOW_PATH" \
         --httpPort="$VAMP_WORKFLOW_HTTP_PORT" \
         --uiPath="$VAMP_WORKFLOW_UI_PATH"
-
-if [ "${VAMP_KEY_VALUE_STORE_TYPE}" == "vault" ]; then
-  /usr/local/vamp/tokenrenewer.sh &
-fi
