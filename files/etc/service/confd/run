@@ -12,6 +12,10 @@ for dependency in /usr/local/vamp/confd/conf.d/workflow.toml /usr/local/vamp/con
   fi
 done
 
+if [ -e /usr/local/vamp/token ]; then
+  VAMP_KEY_VALUE_STORE_TOKEN="$( cat /usr/local/vamp/token )"
+fi
+
 exec 2>&1
 
 if [[ -z ${VAMP_KEY_VALUE_STORE_TOKEN} ]] ; then
