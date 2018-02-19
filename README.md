@@ -79,13 +79,13 @@ Important environment variables:
 - `VAMP_WORKFLOW_EXECUTION_TIMEOUT <=> $executionTimeout`
 - `VAMP_ELASTICSEARCH_URL <=> http://elasticsearch:9200`
 
-Parameters related to Vamp:
+Parameters related to Vamp Node.js client:
 
 - `VAMP_URL`
 - `VAMP_API_CACHE` - `true` by default
 - `VAMP_API_TOKEN`
 - `VAMP_NAMESPACE`
-- `VAMP_CA`
+- `VAMP_CA` - optional path to CA file
 - `VAMP_TLS_CHECK` - `true` by default
 
 Vamp JavaScript API [vamp-node-client](https://github.com/magneticio/vamp-node-client)
