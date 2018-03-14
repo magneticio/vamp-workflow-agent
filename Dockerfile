@@ -1,4 +1,4 @@
-FROM magneticio/node:7.4-alpine
+FROM node:9.8-alpine
 
 # https://github.com/peterbourgon/runsvinit
 ENV RUNSVINIT_URL=https://github.com/peterbourgon/runsvinit/releases/download/v2.0.0/runsvinit-linux-amd64.tgz
