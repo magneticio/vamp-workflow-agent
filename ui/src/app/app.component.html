@@ -2,55 +2,55 @@
 
   <div *ngSwitchCase="null">
 
-    <md-toolbar class="toolbar">
+    <mat-toolbar class="toolbar" color="primary">
       Executions
       <span class="app-toolbar-filler"></span>
-      <md-slide-toggle [checked]="false" color="primary" (change)="change($event)">FAILED ONLY</md-slide-toggle>
-    </md-toolbar>
+      <mat-slide-toggle [checked]="false" (change)="change($event)">FAILED ONLY</mat-slide-toggle>
+    </mat-toolbar>
 
-    <md-list-item *ngFor="let execution of executions" (click)="show(execution)">
-      <md-card class="app-card clickable">
-        <md-grid-list cols="4" rowHeight="fit" class="app-execution">
-          <md-grid-tile>
+    <mat-list-item *ngFor="let execution of executions" (click)="show(execution)">
+      <mat-card class="app-card clickable">
+        <mat-grid-list cols="4" rowHeight="fit" class="app-execution">
+          <mat-grid-tile>
             <div [ngSwitch]="execution.status">
-              <i *ngSwitchCase="null" class="fa fa-cog fa-spin"></i>
-              <span *ngSwitchCase="0" class="status-point success"></span>
-              <span *ngSwitchDefault class="status-point faliure"></span>
+              <mat-icon *ngSwitchCase="null" color="primary">cached</mat-icon>
+              <mat-icon *ngSwitchCase="0" color="primary">check</mat-icon>
+              <mat-icon *ngSwitchDefault color="error">error_outlined</mat-icon>
             </div>
-          </md-grid-tile>
-          <md-grid-tile>
+          </mat-grid-tile>
+          <mat-grid-tile>
             #{{execution.id}}
-          </md-grid-tile>
-          <md-grid-tile>
-              <md-list-item>{{ execution.start | date:'HH:mm:ss' }}</md-list-item>
-          </md-grid-tile>
-          <md-grid-tile>
-            <md-list-item>{{ execution.elapsed >= 0 ? execution.elapsed + ' ms' : ''}}</md-list-item>
-          </md-grid-tile>
-        </md-grid-list>
-      </md-card>
-    </md-list-item>
+          </mat-grid-tile>
+          <mat-grid-tile>
+              <mat-list-item>{{ execution.start | date:'HH:mm:ss' }}</mat-list-item>
+          </mat-grid-tile>
+          <mat-grid-tile>
+            <mat-list-item>{{ execution.elapsed >= 0 ? execution.elapsed + ' ms' : ''}}</mat-list-item>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </mat-card>
+    </mat-list-item>
 
   </div>
 
   <div *ngSwitchDefault>
 
-    <md-toolbar class="toolbar">
+    <mat-toolbar class="toolbar" color="primary">
       #{{executionDetails.id}} Execution log
       <span class="app-toolbar-filler"></span>
 
-      <button md-raised-button (click)="show(null)">Back</button>
-    </md-toolbar>
+      <button mat-raised-button (click)="show(null)">Back</button>
+    </mat-toolbar>
 
     <div class="app-log">
-      <md-card *ngFor="let log of executionDetails.log" class="app-card">
+      <mat-card *ngFor="let log of executionDetails.log" class="app-card">
         <div class="log-title ">
           <span>{{ log.timestamp | date:'HH:mm:ss' }}</span>
           <span *ngIf="log.error" class="vamp-tag label-danger">ERROR</span>
           <span *ngIf="log.tag" class="vamp-tag label-primary" >{{ log.tag }}</span>
         </div>
         <p class="log-message">{{ log.message }}</p>
-      </md-card>
+      </mat-card>
     </div>
   </div>
 

@@ -2,25 +2,45 @@
 SHELL             := bash
 .SHELLFLAGS       := -eu -o pipefail -c
 .DEFAULT_GOAL     := default
-.DELETE_ON_ERROR:
-.SUFFIXES:
+.DELETE_ON_ERROR  :
+.SUFFIXES         :
 
-# Targets
-.PHONY: all
-all: default
+STASH       := stash
+PROJECT     := vamp-workflow-agent-ui
+PROJECT_DIR := $(CURDIR)
+FABRICATOR  := node:9.11.1
 
-# Install the necessary NodeJS dependencies and build the UI
-.PHONY: default
-default:
-	@echo "Building ui"
-	npm rebuild node-sass
-	npm install
-	npm update
-	npm prune
-	npm run ng -- build --env=prod
+# if Makefile.local exists, include it.
+ifneq ("$(wildcard Makefile.local)", "")
+	include Makefile.local
+endif
 
 .PHONY: clean
 clean:
-	rm -rf "$(CURDIR)"/node_modules
 	rm -rf "$(CURDIR)"/dist
-	rm -rf "$(CURDIR)"/npm-debug.log
+
+.PHONY: purge
+purge: clean
+	rm -rf "$(CURDIR)"/node_modules
+
+.PHONY: update
+update:
+	yarn install
+	yarn upgrade
+
+.PHONY: local
+local:
+	yarn install
+	yarn run ng build -prod
+
+.PHONY: build
+build:
+	docker run \
+         --rm \
+         --volume $(STASH):/root \
+         --volume $(PROJECT_DIR):/$(PROJECT) \
+         --workdir=/$(PROJECT) \
+         $(FABRICATOR) make local
+
+.PHONY: default
+default: clean build

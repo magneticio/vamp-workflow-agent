@@ -1,22 +1,11 @@
-
-
-.app-content {
+mat-card {
+  height: 3rem;
 }
 
-.toolbar {
-  background-color: #0D1E26;
-  text-align: center;
-  border-bottom: 1px solid #234B5F;
-  font-weight: 300;
-  font-size: 1.4rem;
-}
-
-md-toolbar md-toolbar-row {
-  height: 6.5rem;
-}
 button {
   min-width: 0;
 }
+
 .app-toolbar-filler {
   flex: 1 1 auto;
 }
@@ -27,7 +16,6 @@ button {
 
 .app-card {
   padding: 1rem;
-  border-bottom: 1px solid #0D1E26;
 }
 
 .app-card.clickable {
@@ -35,7 +23,7 @@ button {
 }
 
 .app-card.clickable:hover {
-  background-color: #142D3C;
+  background-color: #f4f4f4;
 }
 
 .app-execution {
@@ -59,7 +47,6 @@ button {
 
 .app-action {
   display: inline-block;
-  color: black;
   position: fixed;
   bottom: 20px;
   right: 20px;
