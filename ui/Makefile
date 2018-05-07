@@ -6,9 +6,8 @@ SHELL             := bash
 .SUFFIXES         :
 
 STASH       := stash
-PROJECT     := vamp-workflow-agent-ui
+PROJECT     := vamp-workflow-agent
 PROJECT_DIR := $(CURDIR)
-FABRICATOR  := node:9.11.1
 
 # if Makefile.local exists, include it.
 ifneq ("$(wildcard Makefile.local)", "")
@@ -30,6 +29,7 @@ update:
 
 .PHONY: local
 local:
+	uname -a
 	yarn install
 	yarn run ng build -prod
 
@@ -40,7 +40,7 @@ build:
          --volume $(STASH):/root \
          --volume $(PROJECT_DIR):/$(PROJECT) \
          --workdir=/$(PROJECT) \
-         $(FABRICATOR) make local
+         node:9.11.1 make local
 
 .PHONY: default
 default: clean build
