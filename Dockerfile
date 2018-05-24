@@ -54,7 +54,7 @@ ENV LANG=C.UTF-8
 ADD files/ /
 ADD ui /usr/local/vamp/ui
 ADD node_modules /usr/local/vamp/node_modules
-ADD package.json version vamp-workflow-agent /usr/local/vamp/
+ADD package.json yarn.lock version vamp-workflow-agent /usr/local/vamp/
 
 RUN chmod +x /usr/local/vamp/tokenrenewer.sh
 
