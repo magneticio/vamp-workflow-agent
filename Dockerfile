@@ -52,7 +52,9 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
 ENV LANG=C.UTF-8
 
 ADD files/ /
-ADD ui version vamp-workflow-agent /usr/local/vamp/
+ADD ui /usr/local/vamp/ui
+ADD node_modules /usr/local/vamp/node_modules
+ADD package.json version vamp-workflow-agent /usr/local/vamp/
 
 RUN chmod +x /usr/local/vamp/tokenrenewer.sh
 

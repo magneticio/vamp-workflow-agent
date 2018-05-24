@@ -64,8 +64,14 @@ build:
          node:9.11.1 make local
 	mkdir -p $(TARGET)
 	echo $(VERSION) > $(TARGET)/version
-	cp $(CURDIR)/Dockerfile $(TARGET)/ && cp -R $(CURDIR)/files $(TARGET)/
+	cp $(CURDIR)/package.json $(TARGET)/ && cp $(CURDIR)/Dockerfile $(TARGET)/ && cp -R $(CURDIR)/files $(TARGET)/
 	mv $(CURDIR)/$(PROJECT) $(TARGET)/. && mv $(CURDIR)/ui/dist $(TARGET)/ui
+	docker run \
+          --rm \
+          --volume $(STASH):/root \
+          --volume $(TARGET):/$(PROJECT) \
+          --workdir=/$(PROJECT) \
+          node:9.11.1 yarn install
 	docker build -t magneticio/$(PROJECT):$(IMAGE_TAG) $(TARGET)
 
 .PHONY: default
