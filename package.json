@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "highland": "^3.0.0-beta.5",
-    "vamp-node-client": "git://github.com/magneticio/vamp-node-client#260076c65a5e92b2589ede9b9a4a6cce563f4fac"
+    "vamp-node-client": "git://github.com/magneticio/vamp-node-client#640600aeca87a3fa72a226c13c9d9e09e82723e6"
   }
 }
