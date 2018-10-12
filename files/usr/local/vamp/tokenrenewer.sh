@@ -12,6 +12,7 @@ while true; do
   SLEEP_DURATION=0
   CREATION_TTL=0
   TTL=0
+  echo "X-Vault-Token: ${TOKEN}"
   if [[ -n ${CONFD_CLIENT_CAKEYS} ]]; then
     LOOKUP=$(curl --cacert ${CONFD_CLIENT_CAKEYS} -s --header "X-Vault-Token: ${TOKEN}" ${URL}/v1/auth/token/lookup-self)
   else
