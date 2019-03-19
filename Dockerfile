@@ -3,7 +3,8 @@ FROM node:9.8-alpine
 # https://github.com/peterbourgon/runsvinit
 ENV RUNSVINIT_URL=https://github.com/peterbourgon/runsvinit/releases/download/v2.0.0/runsvinit-linux-amd64.tgz
 
-ENV CONFD_URL=https://github.com/kelseyhightower/confd/releases/download/v0.15.0/confd-0.15.0-linux-amd64
+ENV CONFD_VER=0.16.1-vamp
+ENV CONFD_URL=https://github.com/magneticio/confd/releases/download/v${CONFD_VER}/confd-${CONFD_VER}-linux-amd64
 
 RUN set -xe \
     && apk add --no-cache \
